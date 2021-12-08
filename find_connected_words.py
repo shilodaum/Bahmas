@@ -51,8 +51,10 @@ class DirectoryScanner:
 
 
 def jaccard_similarity(word1, word2, scanner, words_occurrences_in_files):
-    return 2 * scanner.count_files_with_keywords((word1, word2)) / (
-            words_occurrences_in_files[word1] + words_occurrences_in_files[word2])
+    intersection = scanner.count_files_with_keywords((word1, word2))
+    union = words_occurrences_in_files[word1] + words_occurrences_in_files[word2] - intersection
+    return intersection / union
+
 
 
 THRESHOLD = 500
