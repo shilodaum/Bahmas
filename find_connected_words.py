@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 
 class Searcher:
     def __init__(self, file_path: Path):
-        self.content = file_path.read_text()
+        self.content = file_path.read_text().split()
 
     def search_multiple_keywords_in_file(self, keywords):
         for keyword in keywords:
@@ -53,7 +53,8 @@ THRESHOLD = 5
 
 if __name__ == '__main__':
     # optional_words = ["hello", "boo", "girls", "goo", "moo"]
-    directory_name = "../foo"
+    # directory_name = "../foo"
+    directory_name = "titles"
     #
     # scanner = DirectoryScanner(directory_name, StemSearcher)
     #
@@ -64,23 +65,27 @@ if __name__ == '__main__':
     popular_words = set(words)
     popular_words = {word: words.count(word) for word in popular_words}
     popular_words = {word: count for word, count in popular_words.items() if count >= THRESHOLD}
+
     scanner = DirectoryScanner(directory_name, RawSearcher)
 
-    print("calculating occurrences")
+    words_occurrences_in_files = {word: scanner.count_files_with_keywords([word]) for word in popular_words}
+
     joint_occurrences = [
-        [2 * scanner.count_files_with_keywords((word1, word2)) / (popular_words[word1] + popular_words[word2]) for word1
+        [2 * scanner.count_files_with_keywords((word1, word2)) / (words_occurrences_in_files[word1] + words_occurrences_in_files[word2]) for word1
          in popular_words] for word2 in
         reversed(popular_words)]
-    print("done occurrences")
 
     reversed_words = [word[::-1] for word in popular_words]
-    fig, ax = plt.subplots()
+
+    fig, ax = plt.subplots(figsize=(8, 6))
     ax.set_xticks(np.arange(len(reversed_words)), labels=reversed_words, rotation=45)
     ax.set_yticks(np.arange(len(reversed_words)), labels=list(reversed(reversed_words)))
 
-    # for i in range(len(popular_words)):
-    #     for j in range(len(popular_words)):
-    #         ax.text(j, i, round(joint_occurrences[i][j], 2),
-    #                 ha="center", va="center", color="g")
+    plt.rc('font', size=8)
+
+    for i in range(len(popular_words)):
+        for j in range(len(popular_words)):
+            ax.text(j, i, round(joint_occurrences[i][j], 2),
+                    ha="center", va="center", color="g")
     plt.imshow(joint_occurrences, cmap='hot', interpolation='nearest')
     plt.show()
