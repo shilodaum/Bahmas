@@ -1,3 +1,4 @@
+import pickle
 from itertools import product
 from pathlib import Path
 
@@ -49,33 +50,41 @@ class DirectoryScanner:
         return count
 
 
-THRESHOLD = 5
+def jaccard_similarity(word1, word2, scanner, words_occurrences_in_files):
+    return 2 * scanner.count_files_with_keywords((word1, word2)) / (
+            words_occurrences_in_files[word1] + words_occurrences_in_files[word2])
 
-if __name__ == '__main__':
-    # optional_words = ["hello", "boo", "girls", "goo", "moo"]
-    # directory_name = "../foo"
-    directory_name = "titles"
-    #
-    # scanner = DirectoryScanner(directory_name, StemSearcher)
-    #
-    # popular_words = {word: scanner.count_files_with_keywords([word]) for word in optional_words}
-    # popular_words = {word: count for word, count in popular_words.items() if count >= THRESHOLD}
 
-    words = Path("one_route.txt").read_text().split()
+THRESHOLD = 500
+
+
+def calc_popular_words(popular_words_file):
+    words = Path(popular_words_file).read_text().split()
     popular_words = set(words)
     popular_words = {word: words.count(word) for word in popular_words}
     popular_words = {word: count for word, count in popular_words.items() if count >= THRESHOLD}
 
+    with open("popular_words.pkl", 'wb') as f:
+        pickle.dump(popular_words, f)
+
+
+def calc_joint_occurrences(directory_name, popular_words):
     scanner = DirectoryScanner(directory_name, RawSearcher)
 
     words_occurrences_in_files = {word: scanner.count_files_with_keywords([word]) for word in popular_words}
 
     joint_occurrences = [
-        [2 * scanner.count_files_with_keywords((word1, word2)) / (words_occurrences_in_files[word1] + words_occurrences_in_files[word2]) for word1
-         in popular_words] for word2 in
+        [jaccard_similarity(word1, word2, scanner, words_occurrences_in_files) for word1 in popular_words] for word2 in
         reversed(popular_words)]
 
+    with open("joint_occurrences.pkl", 'wb') as f:
+        pickle.dump(joint_occurrences, f)
+
+
+def plot_joint_occurrences(popular_words):
     reversed_words = [word[::-1] for word in popular_words]
+    with open("joint_occurrences.pkl", 'rb') as f:
+        joint_occurrences = pickle.load(f)
 
     fig, ax = plt.subplots(figsize=(8, 6))
     ax.set_xticks(np.arange(len(reversed_words)), labels=reversed_words, rotation=45)
@@ -87,5 +96,15 @@ if __name__ == '__main__':
         for j in range(len(popular_words)):
             ax.text(j, i, round(joint_occurrences[i][j], 2),
                     ha="center", va="center", color="g")
-    plt.imshow(joint_occurrences, cmap='hot', interpolation='nearest')
+    plt.imshow(joint_occurrences, cmap='GnBu', interpolation='nearest')
     plt.show()
+
+
+if __name__ == '__main__':
+    directory_name = "titles"
+
+    # calc_popular_words("demo_text.txt")
+    with open("popular_words.pkl", 'rb') as f:
+        popular_words = pickle.load(f)
+    # calc_joint_occurrences(directory_name, popular_words)
+    plot_joint_occurrences(popular_words)
