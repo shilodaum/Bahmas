@@ -92,7 +92,7 @@ def dict_to_sorted_items(d):
 def main():
     txt = ''
     unique = dict()
-    for i in range(1, 2):
+    for i in range(1, 342):
         if os.path.exists(f'titles/{i}.txt'):
             with open(f'titles/{i}.txt', 'r') as f:
                 unique2 = find_unique_buzzwords(f.read())
@@ -106,7 +106,7 @@ def main():
     unique_list = dict_to_sorted_items(unique)
     for key, value in unique_list:
         demo_text += (key + ' ') * value
-    with open("one_route.txt", 'w') as f:
+    with open("demo_text.txt", 'w') as f:
         f.write(demo_text)
 
     print(unique_list)
