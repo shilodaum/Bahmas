@@ -107,8 +107,8 @@ def manage_prefixes(words_list, symbols='? - ! . , : ;', prefixes='ה ו ב ל �
 
 
 def main():
-    with open('tiuli_samples/1.txt', 'rb') as f:
-        corpus = f.read().decode()
+    with open('tiuli_samples/2.txt', 'r') as f:
+        corpus = f.read()
     bz = find_unique_buzzwords(corpus)
     print(corpus)
     print(bz)
