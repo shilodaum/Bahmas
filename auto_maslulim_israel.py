@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import os
 
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
-pages_num = 5000
+pages_num = 50
 
 def get_page_title(index):
     """

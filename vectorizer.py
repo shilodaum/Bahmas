@@ -1,3 +1,27 @@
+def find_unique_buzzwords(corpus):
+    """
+    find unique words - common words in the corpus that are not common in Hebrew
+    :param corpus: text source
+    :return: items list of the words and counts
+    """
+    all_buzzwords = find_buzzwords(corpus)
+    general_common_words = get_stop_words()
+    uniqe_buzzwords = list()
+    for word, freq in all_buzzwords:
+        if word not in general_common_words:
+            uniqe_buzzwords.append((word, freq))
+    unique_words_filtered = manage_prefixes(uniqe_buzzwords)
+    return unique_words_filtered
+
+
+def find_buzzwords(corpus):
+    words = corpus.split()
+    words_options = set(words)
+    counter = {word: words.count(word) for word in words_options}
+    sorted_buzzwords = dict_to_sorted_items(counter)
+    return sorted_buzzwords
+
+
 def dict_to_sorted_items(d):
     """
     convert dictionary of (word, num_of_occurrences) to sorted items list.
@@ -80,3 +104,15 @@ def manage_prefixes(words_list, symbols='? - ! . , : ;', prefixes='ה ו ב ל �
     hebrew_buzzwords = filter_hebrew(words_list, symbols)
     buzzwords_prefixes = filter_prefixes(hebrew_buzzwords, prefixes)
     return buzzwords_prefixes
+
+
+def main():
+    with open('tiuli_samples/1.txt', 'rb') as f:
+        corpus = f.read().decode()
+    bz = find_unique_buzzwords(corpus)
+    print(corpus)
+    print(bz)
+
+
+if __name__ == '__main__':
+    main()
