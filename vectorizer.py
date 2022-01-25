@@ -1,8 +1,8 @@
 def dict_to_sorted_items(d):
     """
-    convert
-    :param d:
-    :return:
+    convert dictionary of (word, num_of_occurrences) to sorted items list.
+    :param d: dictionary of the words in the text and the number of their occurrences (word, num_of_occurrences)
+    :return: sorted items list of the words
     """
     return sorted(list(d.items()), key=lambda item: item[1], reverse=True)
 
@@ -45,7 +45,7 @@ def filter_hebrew(words_list, symbols):
                     words_dict[key[:-1]] = words_dict[key]
             del words_dict[key]
 
-        #sentence contains characters not in hebrew
+        # sentence contains characters not in hebrew
         elif not all("\u0590" <= character <= "\u05EA" for character in key):
             del words_dict[key]
 
