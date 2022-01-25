@@ -7,9 +7,6 @@ from os import path
 from PIL import Image
 
 
-# from wordcloud import WordCloud, STOPWORDS, ImageColorGenerator
-
-
 def find_buzzwords(corpus):
     words = corpus.split()
     # print(words)
