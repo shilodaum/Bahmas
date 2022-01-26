@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as bs
 import os
 
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
-pages_num = 50
+pages_num = 400
 
 def get_page_title(index):
     """
@@ -61,16 +61,16 @@ def download_pages_and_titles():
     # Download the pages
     for i in range(1000, 1000 + pages_num):
         if get_page(i):
-            print(i)
+            print("page ", i, " succeeded!")
         else:
             print('page number ' + str(i) + 'did not succeed')
 
     # Download the titles
     for i in range(1000, 1000 + pages_num):
         if get_page_title(i):
-            print(i)
+            print("title of page ", i, " succeeded!")
         else:
-            print('page number ' + str(i) + 'did not succeed')
+            print('title of page ' + str(i) + 'did not succeed')
 
 
 if __name__ == '__main__':

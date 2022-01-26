@@ -3,12 +3,17 @@ from bs4 import BeautifulSoup as bs
 import os
 
 base_link = 'https://www.tiuli.com/tracks/'
-
+NUM_OF_PAGES = 400
 
 def get_page_title(index):
     try:
         with open('output/' + str(index) + '.html', 'rb') as f:
             txt = f.read()
+
+            # delete irrelevant information
+            page_appendix = b'<h2 class="heading-h2 mb-0">'
+            txt = txt[:txt.find(page_appendix)]
+
             if len(txt) == 0:
                 print('Problem at ' + str(index))
             soup = bs(txt, 'html.parser')
@@ -18,7 +23,7 @@ def get_page_title(index):
                 for tag in soup.find_all('p'):
                     txt += str(tag.contents[0]) + '\n'
                 of.write(txt)
-    except:
+    except Exception as e:
         return False
     return True
 
@@ -32,20 +37,23 @@ def get_page(index):
 
 
 def main():
+    # open result folders
     if not os.path.exists('output'):
         os.mkdir('output')
     if not os.path.exists('titles'):
         os.mkdir('titles')
-    for i in range(400):
+
+    # run of the trips pages
+    for i in range(NUM_OF_PAGES):
         if get_page(i):
-            print(i)
+            print("page ", i, " succeeded!")
         else:
-            print('Unfair ehh ' + str(i))
-    for i in range(400):
+            print('page ' + str(i) + " failed:(")
+    for i in range(NUM_OF_PAGES):
         if get_page_title(i):
-            print(i)
+            print("title of page ", i, " succeeded!")
         else:
-            print('Unfair ehh ' + str(i))
+            print('title of page ' + str(i) + " failed:(")
 
 
 if __name__ == '__main__':
