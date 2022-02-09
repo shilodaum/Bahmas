@@ -3,7 +3,8 @@ from bs4 import BeautifulSoup as bs
 import os
 
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
-pages_num = 400
+pages_num = 5000
+
 
 def get_page_title(index):
     """
@@ -39,12 +40,14 @@ def get_page(index):
     :param index: The trip page number
     :return: True if the download succeeded. False otherwise.
     """
-    r = requests.get(base_link + str(index))
+    r = requests.get(base_link + str(index), allow_redirects=False)
+    print(r.status_code)
     if r.status_code == 200:
-        with open('output_maslulim_israel/' + str(index) + '.html', 'wb') as f:
-            f.write(r.content)
+        with open('output_maslulim_israel/' + str(index) + '.html', 'w', encoding='utf-8') as f:
+            f.write(r.text)
         return True
-    return False
+    else:
+        return False
 
 
 def download_pages_and_titles():
@@ -61,16 +64,16 @@ def download_pages_and_titles():
     # Download the pages
     for i in range(1000, 1000 + pages_num):
         if get_page(i):
-            print("page ", i, " succeeded!")
+            print(f'page number {i} succeeded')
         else:
-            print('page number ' + str(i) + 'did not succeed')
+            print(f'page number {i} did not succeed')
 
     # Download the titles
     for i in range(1000, 1000 + pages_num):
         if get_page_title(i):
-            print("title of page ", i, " succeeded!")
+            print(f'title of page number {i} succeeded')
         else:
-            print('title of page ' + str(i) + 'did not succeed')
+            print(f'title of page number {i} did not succeed')
 
 
 if __name__ == '__main__':
