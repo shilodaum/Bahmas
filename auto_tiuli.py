@@ -7,18 +7,18 @@ NUM_OF_PAGES = 400
 
 def get_page_title(index):
     try:
-        with open('output/' + str(index) + '.html', 'rb') as f:
+        with open('output/' + str(index) + '.html', 'r', encoding='utf-8') as f:
             txt = f.read()
 
             # delete irrelevant information
-            page_appendix = b'<h2 class="heading-h2 mb-0">'
+            page_appendix = '<h2 class="heading-h2 mb-0">'
             txt = txt[:txt.find(page_appendix)]
 
             if len(txt) == 0:
                 print('Problem at ' + str(index))
             soup = bs(txt, 'html.parser')
 
-            with open('titles/' + str(index) + '.txt', 'w') as of:
+            with open('titles/' + str(index) + '.txt', 'w', encoding='utf-8') as of:
                 txt = ''
                 for tag in soup.find_all('p'):
                     txt += str(tag.contents[0]) + '\n'
@@ -31,8 +31,8 @@ def get_page_title(index):
 def get_page(index):
     r = requests.get(base_link + str(index))
     if r.status_code == 200:
-        with open('output/' + str(index) + '.html', 'wb') as f:
-            f.write(r.content)
+        with open('output/' + str(index) + '.html', 'w',encoding='utf-8') as f:
+            f.write(r.text)
     return r.status_code == 200
 
 
