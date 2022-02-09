@@ -1,6 +1,7 @@
 import pandas as pd
 import os
 import warnings
+from sklearn.cluster import KMeans
 
 warnings.simplefilter('ignore')
 import hebrew_tokenizer as ht
@@ -75,7 +76,7 @@ def count_vectorization(df):
 
     X_train = pd.DataFrame(train.toarray(), columns=vec.get_feature_names())
 
-    return X_train
+    return X_train, train
 
 
 def stemming(df):
@@ -119,7 +120,7 @@ def delete_rare_words(df, threshold=5):
 
 def download_df_csv():
     texts_list = get_list_of_texts()
-    df = count_vectorization(texts_list)
+    df, transformed = count_vectorization(texts_list)
     df = stemming(df)
     df = delete_rare_words(df)
     df.to_csv('texts_vectors.csv', index=False)
