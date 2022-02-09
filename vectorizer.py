@@ -117,33 +117,27 @@ def delete_rare_words(df, threshold=5):
     return df
 
 
+def download_df_csv():
+    texts_list = get_list_of_texts()
+    df = count_vectorization(texts_list)
+    df = stemming(df)
+    df = delete_rare_words(df)
+    df.to_csv('texts_vectors.csv', index=False)
+
+
+def get_features(filepath):
+    df = pd.read_csv(filepath)
+    return list(df.columns)
+
+
+def show_df_csv(filepath):
+    df = pd.read_csv(filepath)
+    print(df)
+
+
 def main():
-    # with open('titles/2.txt', 'r') as f:
-    #     corpus = f.read()
-    # tokens = tokenization(corpus)
-    # l = get_list_of_texts()
-    # df = count_vectorization(l)
-
-    # print(df)
-    # print('-----------------------')
-    # df = stemming(df)
-    # df = pd.read_csv('res.csv')
-    # print(df)
-    # print('-----------------------')
-    # print(list(df.columns))
-    # print('-----------------------')
-    # df = delete_rare_words(df)
-    # print(df)
-    # print('-----------------------')
-    # df.to_csv('res_del_rare.csv', index=False)
-    df1 = pd.read_csv('res_del_rare.csv')
-    df2 = pd.read_csv('res.csv')
-
-    words1 = list(df1.columns)
-    words2 = list(df2.columns)
-
-    deleted_words = [a for a in words2 if a not in words1]
-    print(deleted_words)
+    # download_df_csv('texts_vectors.csv')
+    print(get_features('texts_vectors.csv'))
 
 
 if __name__ == '__main__':
