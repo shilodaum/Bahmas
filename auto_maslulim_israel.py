@@ -3,6 +3,8 @@ from bs4 import BeautifulSoup as bs
 import os
 
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
+
+# TODO need to address 1 2 3 digits numbers and numbers up to 9999
 pages_num = 5000
 
 
