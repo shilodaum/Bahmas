@@ -4,8 +4,27 @@ import os
 
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
 
+maslulim_titles_folder_path = os.path.join('titles_maslulim_israel')
+
 # TODO need to address 1 2 3 digits numbers and numbers up to 9999
 pages_num = 10000
+
+
+def delete_duplicates():
+    delete_counter=0
+    maslulim_names = list()
+    maslulim_files = sorted(os.listdir(maslulim_titles_folder_path))
+    for t_file in maslulim_files:
+        with open(os.path.join(maslulim_titles_folder_path, t_file), 'r', encoding='utf-8') as f:
+            file_text = f.read()
+            file_lines = file_text.splitlines()
+            title_name = file_lines[1]
+        if title_name in maslulim_names:
+            os.remove(os.path.join(maslulim_titles_folder_path, t_file))
+            delete_counter+=1
+        else:
+            maslulim_names.append(title_name)
+    print(f'deleted {delete_counter} files')
 
 
 def get_page_title(index):
@@ -90,3 +109,4 @@ def get_titles():
 if __name__ == '__main__':
     download_pages()
     get_titles()
+    delete_duplicates()
