@@ -5,7 +5,7 @@ import os
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
 
 # TODO need to address 1 2 3 digits numbers and numbers up to 9999
-pages_num = 5000
+pages_num = 10000
 
 
 def get_page_title(index):
@@ -17,18 +17,23 @@ def get_page_title(index):
     """
 
     try:
-        with open('output_maslulim_israel/' + str(index) + '.html', 'rb') as f:
-
+        with open('output_maslulim_israel/' + str(index) + '.html', 'r', encoding='utf-8') as f:
+            print('opened')
             # Read the relevant html page
             txt = f.read()
             if len(txt) == 0:
                 print('Problem at ' + str(index))
 
             soup = bs(txt, 'html.parser')
-            with open('titles_maslulim_israel/' + str(index) + '.txt', 'w') as of:
+            with open('titles_maslulim_israel/' + str(index) + '.txt', 'w', encoding='utf-8') as of:
                 txt = ''
+                for tag in soup.find_all('h1'):
+                    for cont in tag.contents:
+                        txt += str(cont) + '\n'
+
                 for tag in soup.find_all('p'):
-                    txt += str(tag.contents[0]) + '\n'
+                    for cont in tag.contents:
+                        txt += str(cont) + '\n'
                 of.write(txt)
     except:
         return False
@@ -52,7 +57,7 @@ def get_page(index):
         return False
 
 
-def download_pages_and_titles():
+def download_pages():
     """
     Download the html pages and their titles.
     """
@@ -60,23 +65,28 @@ def download_pages_and_titles():
     # Create the relevant folders
     if not os.path.exists('output_maslulim_israel'):
         os.mkdir('output_maslulim_israel')
-    if not os.path.exists('titles_maslulim_israel'):
-        os.mkdir('titles_maslulim_israel')
 
     # Download the pages
-    for i in range(1000, 1000 + pages_num):
-        if get_page(i):
-            print(f'page number {i} succeeded')
+    for i in range(9829, 10000):
+        idx = (4 - len(str(i))) * '0' + str(i)
+        if get_page(idx):
+            print(f'page number {idx} succeeded')
         else:
-            print(f'page number {i} did not succeed')
+            print(f'page number {idx} did not succeed')
 
+
+def get_titles():
+    if not os.path.exists('titles_maslulim_israel'):
+        os.mkdir('titles_maslulim_israel')
     # Download the titles
-    for i in range(1000, 1000 + pages_num):
-        if get_page_title(i):
-            print(f'title of page number {i} succeeded')
+    for i in range(pages_num):
+        idx = (4 - len(str(i))) * '0' + str(i)
+        if get_page_title(idx):
+            print(f'title of page number {idx} succeeded')
         else:
-            print(f'title of page number {i} did not succeed')
+            print(f'title of page number {idx} did not succeed')
 
 
 if __name__ == '__main__':
-    download_pages_and_titles()
+    download_pages()
+    get_titles()
