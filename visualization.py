@@ -1,25 +1,33 @@
+from sys import maxsize
+
 from sklearn.cluster import KMeans
 from wordcloud import WordCloud
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from vectorizer import get_features
+
+def get_features(filepath):
+    df = pd.read_csv(filepath)
+    return list(df.columns)
 
 
 def find_optimal_k(X_transformed, is_show=True):
-    Sum_of_squared_distances = []
-    K = range(2, 10)
-    for k in K:
+    sum_of_squared_distances = []
+    optimal_k = None
+    min_ssd = maxsize
+    for k in range(2, 10):
         km = KMeans(n_clusters=k, max_iter=200, n_init=10)
         km = km.fit(X_transformed)
-        Sum_of_squared_distances.append(km.inertia_)
+        sum_of_squared_distances.append(km.inertia_)
+        if km.inertia_ < min_ssd:
+            optimal_k = k
     if is_show:
-        plt.plot(K, Sum_of_squared_distances, 'bx-')
+        plt.plot(range(2, 10), sum_of_squared_distances, 'bx-')
         plt.xlabel('k')
         plt.ylabel('Sum_of_squared_distances')
         plt.title('Elbow Method For Optimal k')
         plt.show()
-    return k
+    return optimal_k
 
 
 # https://towardsdatascience.com/clustering-documents-with-python-97314ad6a78d
@@ -36,8 +44,8 @@ def clustering(X_transformed, filepath):
 
 
 def create_word_clouds_of_clusters(labels, true_k, title_and_clusters):
-    result={'cluster': labels, 'wiki': wiki_lst}
-    result=pd.DataFrame(result)
+    result = {'cluster': labels, 'wiki': wiki_lst}
+    result = pd.DataFrame(result)
     for k in range(0, true_k):
         s = result[result.cluster == k]
         text = s['wiki'].str.cat(sep=' ')
