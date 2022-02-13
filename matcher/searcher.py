@@ -23,9 +23,10 @@ class BaseSearcherInArray(Searcher):
         # self.sim_func = self.jaccard_similarity
 
     def search(self):
-        argmax = max(range(len(self.world)), key=lambda i: self.sim_func(self.world[i]))
-        return self.world[argmax]
-
+        max_indices = sorted(list(range(len(self.world))),
+                             key=lambda i: float("-inf") if np.isnan(self.sim_func(self.world[i])) else self.sim_func(
+                                 self.world[i]), reverse=True)
+        return max_indices[:5]
 
 # class AdamSearcher:
 #     def __init__(self, vector: np.ndarray, world):
