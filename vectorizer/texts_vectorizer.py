@@ -44,24 +44,9 @@ def tokenization(text):
 def get_list_of_texts():
     all_txt_files = []
 
-    # tiuli output_tiuli
-    txt_files = sorted(os.listdir(tiuli_titles_folder_path))
-
-    for file in txt_files:
-        with open(os.path.join(tiuli_titles_folder_path, file), 'r', encoding='utf-8') as f:
-            corpus = f.read()
-            tokens = tokenization(corpus)
-            connected_tokens = " ".join(tokens)
-            all_txt_files.append(connected_tokens)
-
-    # maslulim israel output_tiuli
-    txt_files = sorted(os.listdir(maslulim_israel_titles_folder_path))
-    for file in txt_files:
-        with open(os.path.join(maslulim_israel_titles_folder_path, file), 'r', encoding='utf-8') as f:
-            corpus = f.read()
-            tokens = tokenization(corpus)
-            connected_tokens = " ".join(tokens)
-            all_txt_files.append(connected_tokens)
+    with open(os.path.join('..', 'createDB', 'paths_data.json'), 'r', encoding='utf-8') as f:
+        elements_list = json.load(f)
+        all_txt_files = [element['path_description'] for element in elements_list]
 
     return all_txt_files
 
@@ -120,13 +105,13 @@ def normalize_rows(df):
     return df.div(df.sum(axis=1), axis=0)
 
 
-def download_df_csv():
+def download_df_csv(filepath):
     texts_list = get_list_of_texts()
     df = count_vectorization(texts_list)
     df = stemming(df)
     df = delete_rare_words(df)
     df = normalize_rows(df)
-    df.to_csv('texts_vectors.csv', index=False)
+    df.to_csv(filepath, index=False)
 
 
 def save_features(filepath):
@@ -142,16 +127,16 @@ def get_features():
     return features
 
 
-def show_df_csv(filepath):
-    df = pd.read_csv(filepath)
+def show_df_csv():
+    df = pd.read_csv('texts_vectors.csv')
     print(df)
 
 
 def main():
-    # download_df_csv()
     filepath = 'texts_vectors.csv'
-    # show_df_csv('texts_vectors.csv')
-    show_df_csv(filepath)
+    print(show_df_csv())
+    # download_df_csv(filepath)
+    # save_features(filepath)
 
 
 if __name__ == '__main__':
