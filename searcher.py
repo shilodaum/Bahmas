@@ -1,13 +1,4 @@
-import math
-from functools import partial, reduce
-
 import numpy as np
-from tensorflow.keras.optimizers import Adam
-
-from tensorflow.keras.losses import cosine_similarity
-from tensorflow import constant
-from tensorflow import GradientTape
-import tensorflow as tf
 
 
 class Searcher:
@@ -17,7 +8,8 @@ class Searcher:
         self.world = world
 
     def jaccard_similarity(self, another_vector: np.ndarray):
-        another_existence_vector = np.where(another_vector != 0, 1, 0)
+        # another_existence_vector = np.where(another_vector != 0, 1, 0)
+        another_existence_vector = another_vector != 0
         return self.existence_vector.dot(another_existence_vector) / len(self.existence_vector)
 
     def cos_similarity(self, another_vector: np.ndarray):
@@ -31,7 +23,8 @@ class BaseSearcherInArray(Searcher):
         # self.sim_func = self.jaccard_similarity
 
     def search(self):
-        return max(range(len(world)), key=lambda i: self.sim_func(world[i]))
+        argmax = max(range(len(self.world)), key=lambda i: self.sim_func(self.world[i]))
+        return self.world[argmax]
 
 
 # class AdamSearcher:
@@ -85,17 +78,3 @@ class BaseSearcherInArray(Searcher):
 #         return num_to_2_vec(int(to_train))
 #
 #
-
-world = [np.array([1, 0, 1] * 100), np.array([1, 1, 1] * 100), np.array([1, 0, 0] * 100)] * 10000
-vector = np.array([0, 0, 1] * 100)
-
-# print(Searcher(vector, world).cos_similarity(world[0]))
-
-world = [constant(v, dtype='float32') for v in world]
-vector = constant(vector, dtype='float32')
-# print(cosine_similarity(vector, world[0]))
-
-searcher = BaseSearcherInArray(vector, world)
-# searcher = AdamSearcher(vector, world)
-print(searcher.search())
-# print(searcher.sim_func(world[0]))
