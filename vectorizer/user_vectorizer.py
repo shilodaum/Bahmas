@@ -1,5 +1,6 @@
-from texts_vectorizer import get_features, tokenization, SUFFIXES, PREFIXES
+from vectorizer.texts_vectorizer import get_features, tokenization, SUFFIXES, PREFIXES
 import pandas as pd
+
 
 def stemming(tokens, features):
     # delete prefixes

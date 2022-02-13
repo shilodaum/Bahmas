@@ -122,7 +122,7 @@ def save_features(filepath):
 
 
 def get_features():
-    with open('features.json', 'r', encoding='utf-8') as f:
+    with open('../vectorizer/features.json', 'r', encoding='utf-8') as f:
         features = json.load(f)
     return features
 
