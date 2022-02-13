@@ -13,7 +13,7 @@ import re
 PREFIXES = ['כש', 'שב', 'ה', 'ו', 'ב', 'ל', 'ש', 'מ', 'כ', 'וש', 'שה', 'מה', 'לה', 'בה', 'וה']
 SUFFIXES = ['ים', 'י', 'ך', 'נו', 'ות', 'כם', 'כן', 'יך', 'יו', 'יה', 'ינו', 'יכם', 'יכן', 'יהם', 'יהן', 'תי', 'תם',
             'תן']
-tiuli_titles_folder_path = os.path.join('titles')
+tiuli_titles_folder_path = os.path.join('titles_tiuli')
 maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
 
 
@@ -47,7 +47,7 @@ def tokenization(text):
 def get_list_of_texts():
     all_txt_files = []
 
-    # tiuli output
+    # tiuli output_tiuli
     txt_files = sorted(os.listdir(tiuli_titles_folder_path))
 
     for file in txt_files:
@@ -57,7 +57,7 @@ def get_list_of_texts():
             connected_tokens = " ".join(tokens)
             all_txt_files.append(connected_tokens)
 
-    # maslulim israel output
+    # maslulim israel output_tiuli
     txt_files = sorted(os.listdir(maslulim_israel_titles_folder_path))
     for file in txt_files:
         with open(os.path.join(maslulim_israel_titles_folder_path, file), 'r', encoding='utf-8') as f:

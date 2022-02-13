@@ -5,8 +5,8 @@ import os
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
 
 maslulim_titles_folder_path = os.path.join('titles_maslulim_israel')
-
-pages_num = 10000
+maslulim_output_folder_path = os.path.join('output_maslulim_israel')
+NUM_OF_PAGES = 10000
 
 
 def delete_duplicates():
@@ -28,14 +28,14 @@ def delete_duplicates():
 
 def get_page_title(index):
     """
-    Download the titles of the html page of the current trip
+    Download the titles_tiuli of the html page of the current trip
 
     :param index: The trip page number
     :return: True if the download succeeded. False otherwise
     """
 
     try:
-        with open('output_maslulim_israel/' + str(index) + '.html', 'r', encoding='utf-8') as f:
+        with open(os.path.join(maslulim_output_folder_path, str(index) + '.html'), 'r', encoding='utf-8') as f:
             print('opened')
             # Read the relevant html page
             txt = f.read()
@@ -43,7 +43,7 @@ def get_page_title(index):
                 print('Problem at ' + str(index))
 
             soup = bs(txt, 'html.parser')
-            with open('titles_maslulim_israel/' + str(index) + '.txt', 'w', encoding='utf-8') as of:
+            with open(os.path.join(maslulim_titles_folder_path, str(index) + '.txt'), 'w', encoding='utf-8') as of:
                 txt = ''
                 for tag in soup.find_all('h1'):
                     for cont in tag.contents:
@@ -68,7 +68,7 @@ def get_page(index):
     r = requests.get(base_link + str(index), allow_redirects=False)
     print(r.status_code)
     if r.status_code == 200:
-        with open('output_maslulim_israel/' + str(index) + '.html', 'w', encoding='utf-8') as f:
+        with open(os.path.join(maslulim_output_folder_path, str(index) + '.html'), 'w', encoding='utf-8') as f:
             f.write(r.text)
         return True
     else:
@@ -77,7 +77,7 @@ def get_page(index):
 
 def download_pages():
     """
-    Download the html pages and their titles.
+    Download the html pages and their titles_tiuli.
     """
 
     # Create the relevant folders
@@ -85,7 +85,7 @@ def download_pages():
         os.mkdir('output_maslulim_israel')
 
     # Download the pages
-    for i in range(9829, 10000):
+    for i in range(NUM_OF_PAGES):
         idx = (4 - len(str(i))) * '0' + str(i)
         if get_page(idx):
             print(f'page number {idx} succeeded')
@@ -96,8 +96,8 @@ def download_pages():
 def get_titles():
     if not os.path.exists('titles_maslulim_israel'):
         os.mkdir('titles_maslulim_israel')
-    # Download the titles
-    for i in range(pages_num):
+    # Download the titles_tiuli
+    for i in range(NUM_OF_PAGES):
         idx = (4 - len(str(i))) * '0' + str(i)
         if get_page_title(idx):
             print(f'title of page number {idx} succeeded')
@@ -105,7 +105,11 @@ def get_titles():
             print(f'title of page number {idx} did not succeed')
 
 
-if __name__ == '__main__':
+def main():
     download_pages()
     get_titles()
     delete_duplicates()
+
+
+if __name__ == '__main__':
+    main()

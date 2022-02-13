@@ -2,7 +2,7 @@ import json
 import os
 import re
 
-tiuli_titles_folder_path = os.path.join('titles')
+tiuli_titles_folder_path = os.path.join('titles_tiuli')
 maslulim_titles_folder_path = os.path.join('titles_maslulim_israel')
 
 
@@ -38,8 +38,8 @@ def merge_path_names():
     matches = list()
     for m_idx, m_file in enumerate(maslulim_files):
         for t_idx, t_file in enumerate(tiuli_files):
-            t_file_words = re.split(r"\s|[,.]", t_file)
-            m_file_words = re.split(r"\s|[,.]", m_file)
+            t_file_words = re.split(r"\s|[,:.]", t_file)
+            m_file_words = re.split(r"\s|[,:.]", m_file)
             # t_file_words = t_file.split(' ')
             # m_file_words = m_file.split(' ')
             if all([(word in m_file_words) for word in t_file_words]):
