@@ -23,7 +23,7 @@ class BaseSearcherInArray(Searcher):
         # self.sim_func = self.jaccard_similarity
 
     def search(self):
-        argmax = max(range(len(world)), key=lambda i: self.sim_func(world[i]))
+        argmax = max(range(len(self.world)), key=lambda i: self.sim_func(self.world[i]))
         return self.world[argmax]
 
 
