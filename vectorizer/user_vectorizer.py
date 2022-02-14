@@ -50,6 +50,12 @@ def vector_of_user(text):
 
     super_vec.apply_manipulation(Counter)
 
+    def add_missing_features(d):
+        features_dict = {f: 0 for f in features}
+        return {**features_dict, **d}
+
+    super_vec.apply_manipulation(add_missing_features)
+
     # final_vec = pd.Series(vec_dict)
     super_vec.apply_manipulation(pd.Series)
 
