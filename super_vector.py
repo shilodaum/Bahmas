@@ -19,6 +19,13 @@ class SuperVector:
             return sim_func(self.left)
         return self.connection_logic(self.left.apply_sim_func(sim_func), self.right.apply_sim_func(sim_func))
 
+    def apply_manipulation(self, manipulation):
+        if self.connection is None:
+            self.left = manipulation(self.left)
+        else:
+            self.left.apply_manipulation(manipulation)
+            self.right.apply_manipulation(manipulation)
+
     def __str__(self):
         if self.right is None:
             return ' '.join(self.left)
