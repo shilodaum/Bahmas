@@ -38,7 +38,8 @@ def reply(update, context):
     update.message.reply_text("אני ממליץ לך על הטיולים הבאים ")
 
     world = pd.read_csv('../vectorizer/texts_vectors.csv').to_numpy()
-    vector = vector_of_user(user_input).to_numpy()
+    vector = vector_of_user(user_input)
+    vector.apply_manipulation(pd.Series.to_numpy)
     searcher = BaseSearcherInArray(vector, world)
     recommendations = searcher.search()
 
