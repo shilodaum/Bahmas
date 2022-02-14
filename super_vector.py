@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class SuperVector:
     def __init__(self, left, right, connection):
         self.left = left
@@ -17,7 +20,14 @@ class SuperVector:
     def apply_sim_func(self, sim_func):
         if self.connection is None:
             return sim_func(self.left)
-        return self.connection_logic(self.left.apply_sim_func(sim_func), self.right.apply_sim_func(sim_func))
+        left_val = self.left.apply_sim_func(sim_func)
+        right_val = self.right.apply_sim_func(sim_func)
+
+        if np.isnan(left_val):
+            return right_val
+        if np.isnan(right_val):
+            return left_val
+        return self.connection_logic(left_val, right_val)
 
     def apply_manipulation(self, manipulation):
         if self.connection is None:
