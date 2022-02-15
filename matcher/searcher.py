@@ -1,31 +1,39 @@
+from functools import partial
+
 import numpy as np
 
 
 class Searcher:
-    def __init__(self, vector: np.ndarray, world):
-        self.vector = vector
-        self.existence_vector = np.where(vector != 0, 1, 0)
+    def __init__(self, super_vector, world):
+        self.super_vector = super_vector
         self.world = world
 
-    def jaccard_similarity(self, another_vector: np.ndarray):
-        # another_existence_vector = np.where(another_vector != 0, 1, 0)
-        another_existence_vector = another_vector != 0
-        return self.existence_vector.dot(another_existence_vector) / len(self.existence_vector)
+    @staticmethod
+    def jaccard_similarity(vector1: np.array, vector2: np.array):
+        existence_vector1 = vector1 != 0
+        existence_vector2 = vector2 != 0
+        return existence_vector1.dot(existence_vector2) / len(existence_vector1)
 
-    def cos_similarity(self, another_vector: np.ndarray):
-        return self.vector.dot(another_vector) / (np.linalg.norm(self.vector) * np.linalg.norm(another_vector))
+    @staticmethod
+    def cos_similarity(vector1: np.array, vector2: np.array):
+        return vector1.dot(vector2) / (np.linalg.norm(vector1) * np.linalg.norm(vector2))
 
 
 class BaseSearcherInArray(Searcher):
-    def __init__(self, vector: np.ndarray, world):
-        super().__init__(vector, world)
+    def __init__(self, super_vector, world):
+        super().__init__(super_vector, world)
         self.sim_func = self.cos_similarity
         # self.sim_func = self.jaccard_similarity
 
     def search(self):
-        argmax = max(range(len(self.world)), key=lambda i: self.sim_func(self.world[i]))
-        return self.world[argmax]
+        def key_func(index):
+            partial_func = partial(self.sim_func, self.world[index])
+            val = self.super_vector.apply_sim_func(partial_func)
+            return val if not np.isnan(val) else float("-inf")
 
+        max_indices = sorted(list(range(len(self.world))),
+                             key=key_func, reverse=True)
+        return max_indices[:5]
 
 # class AdamSearcher:
 #     def __init__(self, vector: np.ndarray, world):
