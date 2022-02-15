@@ -29,7 +29,7 @@ def get_list_of_words(filename):
 
 
 def get_stop_words():
-    return get_list_of_words("../createDB/heb_stop_words.txt")
+    return get_list_of_words("./heb_stop_words.txt")
 
 
 def tokenization(text):
