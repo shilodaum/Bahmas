@@ -1,16 +1,23 @@
 import numpy as np
 
+and_words = ["וגם", "גם", "עם", "אך"]
+or_words = ["או"]
+
+connections_map = {}
+connections_map.update({word: min for word in and_words})
+connections_map.update({word: max for word in or_words})
+
 
 class SuperVector:
     def __init__(self, left, right, connection):
         self.left = left
         self.right = right
         self.connection = connection
-        self.connection_logic = None if connection is None else {"או": max, "וגם": min}[connection]
+        self.connection_logic = None if connection is None else connections_map[connection]
 
     @staticmethod
     def parse(tokens):
-        connections = ["או", "וגם"]
+        connections = connections_map.keys()
 
         for i, token in enumerate(tokens):
             if token in connections:
