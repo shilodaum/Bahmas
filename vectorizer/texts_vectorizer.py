@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import warnings
 import json
+import pickle
 
 warnings.simplefilter('ignore')
 import hebrew_tokenizer as ht
@@ -56,7 +57,8 @@ def count_vectorization(df):
 
     # fit the countVectorizer on the train's features
     train = vec.fit_transform(df)
-
+    with open('../visualization/x_transformed.pickle', 'wb') as f:
+        pickle.dump(train, f)
     X_train = pd.DataFrame(train.toarray(), columns=vec.get_feature_names())
 
     return X_train
@@ -134,8 +136,8 @@ def show_df_csv():
 
 def main():
     filepath = 'texts_vectors.csv'
-    print(show_df_csv())
-    # download_df_csv(filepath)
+    # print(show_df_csv())
+    download_df_csv(filepath)
     # save_features(filepath)
 
 
