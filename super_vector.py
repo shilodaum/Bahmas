@@ -1,11 +1,15 @@
+from copy import deepcopy
+
 import numpy as np
 
 and_words = ["וגם", "גם", "עם", "אך"]
 or_words = ["או"]
+not_words = ["לא", "ללא", "חסר", "בלי"]
 
 connections_map = {}
 connections_map.update({word: min for word in and_words})
 connections_map.update({word: max for word in or_words})
+connections_map.update({word: min for word in not_words})
 
 
 class SuperVector:
@@ -21,6 +25,9 @@ class SuperVector:
 
         for i, token in enumerate(tokens):
             if token in connections:
+                if token in not_words:
+                    return NotSuperVector(SuperVector.parse(tokens[:i]), SuperVector.parse(tokens[i + 1:]), "וגם",
+                                          token)
                 return SuperVector(SuperVector.parse(tokens[:i]), SuperVector.parse(tokens[i + 1:]), token)
         return SuperVector(tokens, None, None)
 
@@ -43,7 +50,45 @@ class SuperVector:
             self.left.apply_manipulation(manipulation)
             self.right.apply_manipulation(manipulation)
 
+    def reverse(self):
+        if self.connection is None:
+            # Assuming called when became words counter
+            self.left = self.left == 0
+        else:
+            self.left.reverse()
+            self.right.reverse()
+
     def __str__(self):
         if self.right is None:
             return ' '.join(self.left)
         return ' '.join([str(self.left), self.connection, str(self.right)])
+
+
+class NotSuperVector(SuperVector):
+    def __init__(self, left, right, connection, not_word):
+        super().__init__(left, right, connection)
+        self.not_word = not_word
+
+    def apply_sim_func(self, sim_func):
+        if self.connection is None:
+            return sim_func(self.left == 0)
+
+        left_copy = deepcopy(self.left)
+        left_copy.reverse()
+        right_copy = deepcopy(self.right)
+        right_copy.reverse()
+
+        left_val = left_copy.apply_sim_func(sim_func)
+        right_val = right_copy.apply_sim_func(sim_func)
+
+        if np.isnan(left_val):
+            return right_val
+
+        if np.isnan(right_val):
+            return left_val
+
+        return min(left_val, right_val)
+
+    def __str__(self):
+        val = super().__str__()
+        return ' '.join([self.not_word, val])
