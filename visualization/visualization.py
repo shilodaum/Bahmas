@@ -12,7 +12,7 @@ from vectorizer.texts_vectorizer import get_list_of_words
 
 
 def get_titles_and_descriptions():
-    file = open('createDB/paths_data.json')
+    file = open('../createDB/paths_data.json')
     paths_data = json.load(file)
     titles = []
     descriptions = []
@@ -43,7 +43,7 @@ def find_optimal_k(X_transformed, is_show=True):  # needed? not always the bigge
 
 # https://towardsdatascience.com/clustering-documents-with-python-97314ad6a78d
 def clustering(filepath):
-    with open('visualization/x_transformed.pickle', 'rb') as f:
+    with open('x_transformed.pickle', 'rb') as f:
         X_transformed = pickle.load(f)
     k = 7
     model = KMeans(n_clusters=k, init='k-means++', n_init=100)
@@ -63,8 +63,8 @@ def create_word_clouds_of_clusters(labels, true_k, title_and_clusters, descripti
         text = s['description'].str.cat(sep=' ')
         text = ' '.join([word for word in text.split()])
         text = get_display(text)  # because Hebrew is right-to-left, we need to process the direction
-        stopwords = get_list_of_words("vectorizer/heb_stop_words.txt")
-        wordcloud = WordCloud(font_path="visualization/AdumaFont.ttf", max_font_size=50, max_words=100, background_color="white", stopwords=stopwords).generate(text)
+        stopwords = get_list_of_words("../vectorizer/heb_stop_words.txt")
+        wordcloud = WordCloud(font_path="../visualization/AdumaFont.ttf", max_font_size=50, max_words=100, background_color="white", stopwords=stopwords).generate(text)
         print('Cluster: {}'.format(k))
         print('Titles')
         titles = title_and_clusters[title_and_clusters.cluster == k]['title']
