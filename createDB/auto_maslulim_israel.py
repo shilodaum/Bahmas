@@ -105,14 +105,15 @@ def get_page_story(file_name):
             for tag in soup.find_all('p'):
                 for cont in tag.contents:
                     path_story += str(cont) + '\n'
+            tags_cleaner = re.compile('<.*?>')
+            clean_story = re.sub(tags_cleaner, '', path_story)
     except Exception as e:
         print(e)
-    return path_story
+    return clean_story
 
 
-# /files/catalog/thumb/120maslulim.jpg
 def get_page_images_links(file_name):
-    pattern="/files/tracks/imgs/.*\.(?:png|jpg)"
+    pattern = "/files/tracks/imgs/.*\.(?:png|jpg)"
     images_list = list()
     try:
         with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
@@ -128,7 +129,7 @@ def get_page_images_links(file_name):
                 image_link = maslulim_main_addr + image_path
                 images_list.append(image_link)
 
-            for match in re.findall(pattern,txt):
+            for match in re.findall(pattern, txt):
                 image_link = maslulim_main_addr + str(match)
                 # print(image_link)
                 images_list.append(image_link)
