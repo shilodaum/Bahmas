@@ -2,7 +2,8 @@ import json
 import pandas as pd
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
-from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
+from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler, \
+    PollHandler
 
 from matcher.searcher import BaseSearcherInArray
 from vectorizer.user_vectorizer import vector_of_user
@@ -15,19 +16,31 @@ def get_data(i):
     return path['path_name'], path['path_tiuli_link'], path['path_description'], path['images_links'], path['map_link']
 
 
+def get_rank(update: Update, context: CallbackContext):
+    poll_answer = update.poll_answer
+    with open("ranks.txt", "a") as ranks_file:
+        ranks_file.write(poll_answer + "\n")
+        ranks_file.close()
+
+
 def get_choice(update: Update, context: CallbackContext):
     call_back_data = int(update.callback_query.data)
     name, site, description, images_links, map_link = get_data(call_back_data)
     update.callback_query.message.reply_text(name)
     update.callback_query.message.reply_text("אם אתה רוצה עוד מידע על המסלול :")
     update.callback_query.message.reply_text(site, disable_web_page_preview=False)
-    update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
-    update.callback_query.message.reply_text(map_link, disable_web_page_preview=False)
+    if map_link:  # Maslulim has not map link
+        update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
+        update.callback_query.message.reply_text(map_link, disable_web_page_preview=False)
     # update.callback_query.message.reply_text(images_links[0], disable_web_page_preview=False)
     for i in range(min(len(images_links), 3)):
         context.bot.send_photo(chat_id=update.callback_query.message.chat_id, photo=images_links[i])
     # context.bot.sendMediaGroup(chat_id=update.callback_query.message.chat_id, media=InputMediaPhoto(images_links[0]))
     # update.message.reply_photo(photo)
+    update.callback_query.message.reply_poll(question="מ-1 (הכי נמוך) עד 6 (הכי גבוה), איך היית מעריך את ההצעות שהוצעו לך בהתאם למה שרצית",
+                                             options=["1", "2", "3", "4", "5", "6"])
+    dp = context.dispatcher
+    dp.add_handler(PollHandler(get_rank))
 
 
 def reply(update, context):
@@ -74,9 +87,8 @@ def start(update: Update, context: CallbackContext) -> None:
     dp.add_handler(MessageHandler(Filters.text, reply))
 
 
-updater = Updater("5117463685:AAGDzPkJxZ7whs36ZumgdkyifMO5OP51gIM")
-
-updater.dispatcher.add_handler(CommandHandler('start', start))
-
-updater.start_polling()
-updater.idle()
+if __name__ == '__main__':
+    updater = Updater("5117463685:AAGDzPkJxZ7whs36ZumgdkyifMO5OP51gIM")
+    updater.dispatcher.add_handler(CommandHandler('start', start))
+    updater.start_polling()
+    updater.idle()
