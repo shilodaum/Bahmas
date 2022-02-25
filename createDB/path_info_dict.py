@@ -111,7 +111,7 @@ def merge_path_names():
         print(f'merged: {len(data)}')
         print(f'all: {len(tiuli_data) + len(maslulim_data)}')
         # print(data)
-        json.dump(data, f)
+        json.dump(data[:-225], f)
     print(f'found {counter} matches')
 
 
