@@ -5,7 +5,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMe
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
 from matcher.searcher import BaseSearcherInArray
-from vectorizer.user_vectorizer import vector_of_user
+from vectorizer.unigram_user_vectorizer import vector_of_user
 
 
 def get_data(i):
