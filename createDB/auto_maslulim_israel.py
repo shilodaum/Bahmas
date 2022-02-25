@@ -7,7 +7,6 @@ import os
 # base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=tracksum&id='
 base_link = 'http://www.maslulim-israel.co.il/mobile/index.php?dir=site&page=tracks&op=track&id='
 maslulim_main_addr = "http://www.maslulim-israel.co.il"
-maslulim_titles_folder_path = 'titles_maslulim_israel'
 maslulim_output_folder_path = 'output_maslulim_israel'
 NUM_OF_PAGES = 10000
 
@@ -105,14 +104,15 @@ def get_page_story(file_name):
             for tag in soup.find_all('p'):
                 for cont in tag.contents:
                     path_story += str(cont) + '\n'
+            tags_cleaner = re.compile('<.*?>')
+            clean_story = re.sub(tags_cleaner, '', path_story)
     except Exception as e:
         print(e)
-    return path_story
+    return clean_story
 
 
-# /files/catalog/thumb/120maslulim.jpg
 def get_page_images_links(file_name):
-    pattern="/files/tracks/imgs/.*\.(?:png|jpg)"
+    pattern = "/files/tracks/imgs/.*\.(?:png|jpg)"
     images_list = list()
     try:
         with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
@@ -128,20 +128,13 @@ def get_page_images_links(file_name):
                 image_link = maslulim_main_addr + image_path
                 images_list.append(image_link)
 
-            for match in re.findall(pattern,txt):
+            for match in re.findall(pattern, txt):
                 image_link = maslulim_main_addr + str(match)
                 # print(image_link)
                 images_list.append(image_link)
     except Exception as e:
         print(e)
     return images_list
-
-
-def write_page_title_file(index):
-    path_story = get_page_story(index_to_file_name(index))
-
-    with open(os.path.join(maslulim_titles_folder_path, str(index) + '.txt'), 'w', encoding='utf-8') as of:
-        of.write(path_story)
 
 
 def get_page(index):
@@ -179,21 +172,6 @@ def download_pages():
             print(f'page number {i} did not succeed')
 
 
-def get_titles():
-    if not os.path.exists('titles_maslulim_israel'):
-        os.mkdir('titles_maslulim_israel')
-    # Download the titles_tiuli
-    for i in range(NUM_OF_PAGES):
-        idx = (4 - len(str(i))) * '0' + str(i)
-        if os.path.exists(os.path.join(maslulim_output_folder_path, index_to_file_name(idx))):
-            story = get_page_story(index_to_file_name(idx))
-            if story:
-                print(f'title of page number {idx} succeeded')
-                print(story)
-            else:
-                print(f'title of page number {idx} did not succeed')
-
-
 def main():
     print(get_page_images_links('100.html'))
     # for i in range(NUM_OF_PAGES):
@@ -201,7 +179,6 @@ def main():
     #         print(get_page_images_links(index_to_file_name(i)))
     # download_pages()
     # delete_duplicates(0, NUM_OF_PAGES)
-    # get_titles()
 
 
 if __name__ == '__main__':
