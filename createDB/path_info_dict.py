@@ -74,8 +74,10 @@ import re
 
 
 def is_similiar(name1, name2):
-    words1 = name1.split()
-    words2 = name2.split()
+    base_name_1 = re.split('[.:,-]', name1)[0]
+    base_name_2 = re.split('[.:,-]', name2)[0]
+    words1 = base_name_1.split()
+    words2 = base_name_2.split()
     return all([(word in words2) for word in words1]) or all([(word in words1) for word in words2])
 
 
@@ -111,13 +113,13 @@ def merge_path_names():
         print(f'merged: {len(data)}')
         print(f'all: {len(tiuli_data) + len(maslulim_data)}')
         # print(data)
-        json.dump(data[:-225], f)
+        json.dump(data, f)
     print(f'found {counter} matches')
 
 
 def main():
-    #create_path_info_maslulim()
-    #create_path_info_tiuli()
+    # create_path_info_maslulim()
+    # create_path_info_tiuli()
     # print(f'{len(tiuli_to_names())} paths in tiuli')
     # print(f'{len(maslulim_to_names())} paths in maslulim')
     merge_path_names()

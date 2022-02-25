@@ -6,7 +6,6 @@ import re
 base_link = 'https://www.tiuli.com/tracks/'
 NUM_OF_PAGES = 400
 tiuli_output_path = 'output_tiuli'
-tiuli_titles_path = 'titles_tiuli'
 
 
 def index_to_file_name(index):
@@ -112,24 +111,13 @@ def get_page_story(file_name):
             for tag in soup.find_all('p'):
                 for cont in tag.contents:
                     story += str(cont) + '\n'
-            tags_cleaner = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});') # re.compile('<.*?>') CLEANR =
+            tags_cleaner = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')  # re.compile('<.*?>') CLEANR =
 
             clean_story = re.sub(tags_cleaner, '', story)
 
     except Exception as e:
         print(e)
     return clean_story
-
-
-# def write_title_file(idx):
-#     story = get_page_story(index_to_file_name(idx))
-#     try:
-#         with open('titles_tiuli/' + str(idx) + '.txt', 'w', encoding='utf-8') as of:
-#             of.write(story)
-#     except Exception as e:
-#         print(e)
-#         return False
-#     return True
 
 
 def get_page(index):
@@ -148,24 +136,14 @@ def get_all_pages(start_index, end_index):
             print(f'page {i} failed :(')
 
 
-# def write_all_titles(start_index, end_index):
-#     for i in range(start_index, end_index):
-#         if write_title_file(i):
-#             print(f'title of page {i} succeeded!')
-#         else:
-#             print(f'title of page {i} failed :(')
-
-
 def main():
     # open result folders
     # if not os.path.exists('output_tiuli'):
     #     os.mkdir('output_tiuli')
-    # if not os.path.exists('titles_tiuli'):
-    #     os.mkdir('titles_tiuli')
+
     print(get_page_story('1.html'))
     # run of the trips pages
     # get_all_pages(0, NUM_OF_PAGES)
-    # write_all_titles(0, NUM_OF_PAGES)
 
 
 if __name__ == '__main__':
