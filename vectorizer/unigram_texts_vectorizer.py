@@ -119,7 +119,7 @@ def download_df_csv(filepath):
 def save_features(filepath):
     df = pd.read_csv(filepath)
     features = list(df.columns)
-    with open('unigram_features.json', 'w', encoding='utf-8') as f:
+    with open('unigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
 
 
@@ -135,7 +135,7 @@ def show_df_csv(filepath):
 
 
 def main():
-    filepath = 'texts_vectors.csv'
+    filepath = 'texts_vectors_unigrams.csv'
     print(show_df_csv())
     # download_df_csv(filepath)
     # save_features(filepath)

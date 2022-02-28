@@ -10,28 +10,28 @@ def stemming(tokens, features):
     # delete prefixes
     new_tokens = []
     for token in tokens:
-        if token in features:
-            new_tokens.append(token)
+        if token[:2] in PREFIXES and token[2:] in features:
+            new_tokens.append(token[2:])
         elif token[:1] in PREFIXES and token[1:] in features:
             new_tokens.append(token[1:])
-        elif token[:2] in PREFIXES and token[2:] in features:
-            new_tokens.append(token[2:])
+        elif token in features:
+            new_tokens.append(token)
 
     # delete suffixes
     final_tokens = []
     for token in new_tokens:
-        if token in features:
-            final_tokens.append(token)
+        if token[-2:] in SUFFIXES and token[:-2] in features:
+            final_tokens.append(token[:-2])
         elif token[-1:] in SUFFIXES and token[:-1] in features:
             final_tokens.append(token[:-1])
-        elif token[-2:] in SUFFIXES and token[:-2] in features:
-            final_tokens.append(token[:-2])
+        elif token in features:
+            final_tokens.append(token)
 
     return final_tokens
 
 
 def vector_of_user(text):
-    filepath = "features_bigrams.json"
+    filepath = "unigrams_features.json"
 
     features = get_features(filepath)
 

@@ -9,9 +9,7 @@ import hebrew_tokenizer as ht
 from sklearn.feature_extraction.text import CountVectorizer
 
 import unigram_texts_vectorizer as unigram_vec
-PREFIXES = ['כש', 'שב', 'ה', 'ו', 'ב', 'ל', 'ש', 'מ', 'כ', 'וש', 'שה', 'מה', 'לה', 'בה', 'וה']
-SUFFIXES = ['ים', 'י', 'ך', 'נו', 'ות', 'כם', 'כן', 'יך', 'יו', 'יה', 'ינו', 'יכם', 'יכן', 'יהם', 'יהן', 'תי', 'תם',
-            'תן']
+PREFIXES = ['ה', 'ו', 'ב', 'ל', 'ש', 'מ', 'כ']
 tiuli_titles_folder_path = os.path.join('titles_tiuli')
 maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
 
@@ -28,6 +26,34 @@ def count_vectorization_bigram(df):
 
     return X_train
 
+def stemming(df):
+    """
+    filter out prefixes from words
+    :param words_list: list of words from text as [(word,count)...]
+    :param prefixes: prefixes
+    :return: filtered words
+    """
+    features = list(df.columns)
+
+    # delete two heh haydiaa: e.g: הנחל הגדול -> נחל גדול
+    for feature in features:
+        word1, word2 = feature.split(' ')
+        if word1[0] == 'ה' and word2[0] == 'ה':
+            new_feature = word1[1:] + ' ' + word2[1:]
+            if new_feature in df.columns:
+                df.loc[:, new_feature] += df.loc[:, feature]
+                df = df.drop(columns=[feature])
+
+
+    # delete prefixes
+    for pref in PREFIXES:
+        for feature in features:
+            if pref + feature in df.columns and feature in df.columns:
+                df.loc[:, feature] += df.loc[:, pref + feature]
+                df = df.drop(columns=[pref + feature])
+
+
+    return df
 
 def delete_rare_features_bigram(df):
     return unigram_vec.delete_rare_features(df, 5)
@@ -35,7 +61,7 @@ def delete_rare_features_bigram(df):
 def download_df_csv(filepath):
     texts_list = unigram_vec.get_list_of_texts()
     df = count_vectorization_bigram(texts_list)
-    df = delete_rare_features_bigram(df)
+    df = stemming(df)
     df = delete_rare_features_bigram(df)
     df = unigram_vec.normalize_rows(df)
     df.to_csv(filepath, index=False)
@@ -43,14 +69,14 @@ def download_df_csv(filepath):
 def save_features(filepath):
     df = pd.read_csv(filepath)
     features = list(df.columns)
-    with open('features_bigrams.json', 'w', encoding='utf-8') as f:
+    with open('bigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
 
 def main():
     filepath = 'texts_vectors_bigrams.csv'
     # unigram_vec.show_df_csv(filepath)
-    print(unigram_vec.get_features('features_bigrams.json'))
-    # download_df_csv(filepath)
+    # print(unigram_vec.get_features('bigrams_features.json'))
+    download_df_csv(filepath)
     # save_features(filepath)
 
 if __name__ == '__main__':

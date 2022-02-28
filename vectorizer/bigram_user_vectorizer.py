@@ -31,7 +31,7 @@ def stemming(tokens, features):
 
 
 def vector_of_user(text):
-    filepath = "unigram_features.json"
+    filepath = "bigrams_features.json"
 
     features = get_features(filepath)
 
