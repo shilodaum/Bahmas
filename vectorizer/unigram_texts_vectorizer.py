@@ -1,8 +1,11 @@
 import pandas as pd
+import numpy as np
 import os
 import warnings
 import json
 import pickle
+import bisect
+import time
 
 warnings.simplefilter('ignore')
 import hebrew_tokenizer as ht
@@ -13,6 +16,15 @@ SUFFIXES = ['ים', 'י', 'ך', 'נו', 'ות', 'כם', 'כן', 'יך', 'יו', 
             'תן']
 tiuli_titles_folder_path = os.path.join('titles_tiuli')
 maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
+
+
+def timeit(f):
+    def inside(*args):
+        start_time = time.time()
+        f(*args)
+        print(f'taken time {time.time() - start_time} seconds')
+
+    return inside
 
 
 def get_list_of_words(filename):
@@ -43,8 +55,6 @@ def tokenization(text):
 
 
 def get_list_of_texts():
-    all_txt_files = []
-
     with open(os.path.join('..', 'createDB', 'paths_data.json'), 'r', encoding='utf-8') as f:
         elements_list = json.load(f)
         all_txt_files = [" ".join(tokenization(element['path_description'])) for element in elements_list]
@@ -64,6 +74,14 @@ def count_vectorization(df):
     return X_train
 
 
+def in_sorted_list(elem, sorted_list):
+    """
+    using bisect algorithm find if value is in an array, i is the index in which i want to insert my value
+    """
+    i = bisect.bisect_left(sorted_list, elem)
+    return i != len(sorted_list) and sorted_list[i] == elem
+
+
 def stemming(df):
     """
     filter out prefixes from words
@@ -71,24 +89,39 @@ def stemming(df):
     :param prefixes: prefixes
     :return: filtered words
     """
-    features = list(df.columns)
+    print(f'there are {len(df.columns)} words')
 
+    features = list(df.columns)
+    features_to_delete = list()
     # delete prefixes
-    for pref in PREFIXES:
-        for feature in features:
-            if pref + feature in df.columns and feature in df.columns:
-                df.loc[:, feature] += df.loc[:, pref + feature]
-                df = df.drop(columns=[pref + feature])
+    print('deleting prefixes')
+    for i, feature in enumerate(features):
+        # if i % 1000 == 0:
+        #     print(f'prefixes of {i}')
+        for pref in PREFIXES:
+            if in_sorted_list(pref + feature, df.columns) and in_sorted_list(feature, df.columns):
+                if not in_sorted_list(feature, features_to_delete):
+                    df.loc[:, feature] += df.loc[:, pref + feature]
+                    # append value in a sorted way
+                    bisect.insort(features_to_delete, pref + feature)
 
+    df = df.drop(columns=features_to_delete)
     features = list(df.columns)
+    features_to_delete = list()
 
     # delete suffixes
-    for suff in SUFFIXES:
-        for feature in features:
-            if feature + suff in df.columns and feature in df.columns:
-                df.loc[:, feature] += df.loc[:, feature + suff]
-                df = df.drop(columns=[feature + suff])
+    print('deleting suffixes')
+    for i, feature in enumerate(features):
+        # if i % 1000 == 0:
+        #     print(f'suffixes of {i}')
 
+        for suff in SUFFIXES:
+            if in_sorted_list(feature + suff, df.columns) and in_sorted_list(feature, df.columns):
+                if not in_sorted_list(feature, features_to_delete):
+                    df.loc[:, feature] += df.loc[:, feature + suff]
+                    bisect.insort(features_to_delete, feature + suff)
+    df = df.drop(columns=features_to_delete)
+    print('deleted')
     return df
 
 
@@ -108,10 +141,21 @@ def normalize_rows(df):
 
 
 def download_df_csv(filepath):
+    print('-----------------------getting words-----------------------')
     texts_list = get_list_of_texts()
+    print('-----------------------counting words-----------------------')
     df = count_vectorization(texts_list)
+    print('-----------------------stemmming words-----------------------')
+    # code for checking stemming runtime
+    # start_time = time.time()
+
     df = stemming(df)
+
+    # print(f'taken time {time.time() - start_time} seconds')
+
+    print('-----------------------deleteing rare words-----------------------')
     df = delete_rare_features(df)
+    print('-----------------------normalizing values-----------------------')
     df = normalize_rows(df)
     df.to_csv(filepath, index=False)
 
@@ -136,9 +180,9 @@ def show_df_csv(filepath):
 
 def main():
     filepath = 'texts_vectors_unigrams.csv'
-    print(show_df_csv())
+    # print(show_df_csv())
     # download_df_csv(filepath)
-    # save_features(filepath)
+    save_features(filepath)
 
 
 if __name__ == '__main__':
