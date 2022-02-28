@@ -108,10 +108,15 @@ def normalize_rows(df):
 
 
 def download_df_csv(filepath):
+    print('----------start to get the texts----------')
     texts_list = get_list_of_texts()
+    print('----------start to create count vector-------------')
     df = count_vectorization(texts_list)
+    print('----------start to do stemming-------------')
     df = stemming(df)
+    print('----------start to delete rare feature-------------')
     df = delete_rare_features(df)
+    print('----------start to normalize rows-------------')
     df = normalize_rows(df)
     df.to_csv(filepath, index=False)
 
