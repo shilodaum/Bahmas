@@ -2,8 +2,7 @@ from collections import Counter
 from functools import partial
 
 from super_vector import SuperVector
-from vectorizer.bigram_texts_vectorizer import PREFIXES
-from vectorizer.unigram_texts_vectorizer import get_features, tokenization
+from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization
 import pandas as pd
 
 
@@ -21,18 +20,18 @@ def stemming(tokens, features):
         word1, word2 = token.split(' ')
         if word1[0] == 'ה' and word2[0] == 'ה':
             new_token = word1[1:] + ' ' + word2[1:]
-            if new_token in features:
+            if in_sorted_list(new_token, features):
                 new_tokens.append(new_token)
-        elif token in features:
+        elif in_sorted_list(token, features):
             new_tokens.append(token)
 
     final_tokens = []
 
     # delete prefixes
     for token in new_tokens:
-        if token[0] in PREFIXES and token[1:] in features:
+        if token[0] in BI_PREFIXES and in_sorted_list(token[1:], features):
             final_tokens.append(token[1:])
-        elif token in features:
+        elif in_sorted_list(token, features):
             final_tokens.append(token)
 
     return final_tokens

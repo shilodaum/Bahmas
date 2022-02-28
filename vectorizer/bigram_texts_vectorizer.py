@@ -1,22 +1,20 @@
 import pandas as pd
 import os
-import warnings
 import json
 import pickle
 
-warnings.simplefilter('ignore')
-import hebrew_tokenizer as ht
+import vectorizer.utils
+from vectorizer.utils import in_sorted_list, BI_PREFIXES
+import bisect
+
 from sklearn.feature_extraction.text import CountVectorizer
 
-import unigram_texts_vectorizer as unigram_vec
-PREFIXES = ['ה', 'ו', 'ב', 'ל', 'ש', 'מ', 'כ']
 tiuli_titles_folder_path = os.path.join('titles_tiuli')
 maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
 
 
-
 def count_vectorization_bigram(df):
-    vec = CountVectorizer(stop_words=unigram_vec.get_stop_words(), ngram_range=(2, 2))
+    vec = CountVectorizer(stop_words=vectorizer.utils.get_stop_words(), ngram_range=(2, 2))
 
     # fit the countVectorizer on the train's features
     train = vec.fit_transform(df)
@@ -26,6 +24,7 @@ def count_vectorization_bigram(df):
 
     return X_train
 
+
 def stemming(df):
     """
     filter out prefixes from words
@@ -33,37 +32,53 @@ def stemming(df):
     :param prefixes: prefixes
     :return: filtered words
     """
-    features = list(df.columns)
+    print(f'there are {len(df.columns)} couples')
 
-    print(len(features), ' features:')
+    features = list(df.columns)
+    features_to_delete = list()
 
     # delete two heh haydiaa: e.g: הנחל הגדול -> נחל גדול
     for i, feature in enumerate(features):
         if i % 1000 == 0:
-            print('feature number ', i)
+            print(f'hh for feature number {i}')
 
         word1, word2 = feature.split(' ')
         if word1[0] == 'ה' and word2[0] == 'ה':
             new_feature = word1[1:] + ' ' + word2[1:]
-            if new_feature in df.columns and feature in df.columns:
-                df.loc[:, new_feature] += df.loc[:, feature]
-                df = df.drop(columns=[feature])
+            if in_sorted_list(new_feature, df.columns) and in_sorted_list(feature, df.columns):
+                if not in_sorted_list(feature, features_to_delete):
+                    df.loc[:, new_feature] += df.loc[:, feature]
+                    # append value in a sorted way
+                    bisect.insort(features_to_delete, feature)
+
+    df = df.drop(columns=features_to_delete)
+    features = list(df.columns)
+    features_to_delete = list()
 
     # delete prefixes
-    for pref in PREFIXES:
-        for feature in features:
-            if pref + feature in df.columns and feature in df.columns:
-                df.loc[:, feature] += df.loc[:, pref + feature]
-                df = df.drop(columns=[pref + feature])
+    for i, feature in enumerate(features):
+        if i % 1000 == 0:
+            print(f'prefixes for feature number {i}')
+
+        for pref in BI_PREFIXES:
+            if in_sorted_list(pref + feature, df.columns) and in_sorted_list(feature, df.columns):
+                if not in_sorted_list(feature, features_to_delete):
+                    df.loc[:, feature] += df.loc[:, pref + feature]
+                    # append value in a sorted way
+                    bisect.insort(features_to_delete, pref + feature)
+
+    df = df.drop(columns=features_to_delete)
 
     return df
 
+
 def delete_rare_features_bigram(df):
-    return unigram_vec.delete_rare_features(df, 5)
+    return vectorizer.utils.delete_rare_features(df, 5)
+
 
 def download_df_csv(filepath):
     print('----------start to get the texts----------')
-    texts_list = unigram_vec.get_list_of_texts()
+    texts_list = vectorizer.utils.get_list_of_texts()
     print('----------start to create count vector-------------')
     df = count_vectorization_bigram(texts_list)
     print('----------start to do stemming-------------')
@@ -71,8 +86,9 @@ def download_df_csv(filepath):
     print('----------start to delete rare feature-------------')
     df = delete_rare_features_bigram(df)
     print('----------start to normalize rows-------------')
-    df = unigram_vec.normalize_rows(df)
+    df = vectorizer.utils.normalize_rows(df)
     df.to_csv(filepath, index=False)
+
 
 def save_features(filepath):
     df = pd.read_csv(filepath)
@@ -80,12 +96,14 @@ def save_features(filepath):
     with open('bigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
 
+
 def main():
     filepath = 'texts_vectors_bigrams.csv'
-    # unigram_vec.show_df_csv(filepath)
-    # print(unigram_vec.get_features('bigrams_features.json'))
+    # vectorizer.utils.show_df_csv(filepath)
+    # print(vectorizer.utils.get_features('bigrams_features.json'))
     download_df_csv(filepath)
-    # save_features(filepath)
+    save_features(filepath)
+
 
 if __name__ == '__main__':
     main()

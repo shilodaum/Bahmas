@@ -8,7 +8,7 @@ from bidi.algorithm import get_display
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from vectorizer.unigram_texts_vectorizer import get_list_of_words
+from vectorizer.utils import get_list_of_words
 
 
 def get_titles_and_descriptions():

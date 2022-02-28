@@ -2,7 +2,7 @@ from collections import Counter
 from functools import partial
 
 from super_vector import SuperVector
-from vectorizer.unigram_texts_vectorizer import get_features, tokenization, SUFFIXES, PREFIXES
+from vectorizer.utils import get_features, in_sorted_list, UNI_PREFIXES, UNI_SUFFIXES, tokenization
 import pandas as pd
 
 
@@ -10,19 +10,19 @@ def stemming(tokens, features):
     # delete prefixes
     new_tokens = []
     for token in tokens:
-        if token[:2] in PREFIXES and token[2:] in features:
+        if token[:2] in UNI_PREFIXES and in_sorted_list(token[2:], features):
             new_tokens.append(token[2:])
-        elif token[:1] in PREFIXES and token[1:] in features:
+        elif token[:1] in UNI_PREFIXES and in_sorted_list(token[1:], features):
             new_tokens.append(token[1:])
-        elif token in features:
+        elif in_sorted_list(token, features):
             new_tokens.append(token)
 
     # delete suffixes
     final_tokens = []
     for token in new_tokens:
-        if token[-2:] in SUFFIXES and token[:-2] in features:
+        if token[-2:] in UNI_SUFFIXES and token[:-2] in features:
             final_tokens.append(token[:-2])
-        elif token[-1:] in SUFFIXES and token[:-1] in features:
+        elif token[-1:] in UNI_SUFFIXES and token[:-1] in features:
             final_tokens.append(token[:-1])
         elif token in features:
             final_tokens.append(token)
@@ -74,6 +74,7 @@ def vector_of_user(text):
 
     final_vec = pd.Series(vec_dict)
     return final_vec
+
 
 def main():
     print(vector_of_user("שלום, שמי ענבל משעל מהים לשם צפונה דרומה הדרום הצפון הים המעיין הגלים הדרום"))
