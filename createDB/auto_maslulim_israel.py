@@ -16,13 +16,17 @@ def index_to_file_name(index):
     return str(index) + '.html'
 
 
-def get_page_title(file_name):
+def get_html_text(file_name):
+    with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
+        txt = f.read()
+    return txt
+
+
+def get_page_title(txt):
     title = ''
     try:
-        with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
         if len(txt) == 0:
-            print('Problem at ' + file_name)
+            print('Problem')
 
         soup = bs(txt, 'html.parser')
         # < div class ="track_box" >
@@ -51,37 +55,33 @@ def delete_duplicates(start_index, end_index):
 
 
 # /files/tracks/maps/hermonbanias_mapa.jpg
-def get_map_link(file_name):
+def get_map_link(txt):
     map_file_link = ''
     try:
-        with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
-            matches = re.findall("/files/tracks/maps/.*\.jpg", txt)
-            if len(matches) > 0:
-                map_file_link = maslulim_main_addr + str(matches[0])
-                # print(map_file_link)
+        matches = re.findall("/files/tracks/maps/.*\.jpg", txt)
+        if len(matches) > 0:
+            map_file_link = maslulim_main_addr + str(matches[0])
+            # print(map_file_link)
     except Exception as e:
         print(e)
     return map_file_link
 
 
 # waze://?ll=33.246876,35.693637
-def get_navigation_link(file_name):
+def get_navigation_link(txt):
     nav_link = ''
-    with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
-        txt = f.read()
-        matches = re.findall("waze://.*\">", txt)
-        if len(matches) > 0:
-            first_match = str(matches[0][:-2])
-            # print(first_match)
-            ll_addr = re.findall("\d*\.\d*,\d*\.\d*", first_match)
-            if len(ll_addr) > 0:
-                nav_link = "https://waze.com/ul?navigate=yes&ll=" + str(ll_addr[0])
-                # print(nav_link)
+    matches = re.findall("waze://.*\">", txt)
+    if len(matches) > 0:
+        first_match = str(matches[0][:-2])
+        # print(first_match)
+        ll_addr = re.findall("\d*\.\d*,\d*\.\d*", first_match)
+        if len(ll_addr) > 0:
+            nav_link = "https://waze.com/ul?navigate=yes&ll=" + str(ll_addr[0])
+            # print(nav_link)
     return nav_link
 
 
-def get_page_story(file_name):
+def get_page_story(txt):
     """
     Download the titles_tiuli of the html page of the current trip
 
@@ -89,49 +89,44 @@ def get_page_story(file_name):
     :return: True if the download succeeded. False otherwise
     """
     path_story = ''
+    clean_story = ''
     try:
-        with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
-            # Read the relevant html page
-            txt = f.read()
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
+        if len(txt) == 0:
+            print('Problem')
 
-            soup = bs(txt, 'html.parser')
-            for tag in soup.find_all('h1'):
-                for cont in tag.contents:
-                    path_story += str(cont) + '\n'
+        soup = bs(txt, 'html.parser')
+        for tag in soup.find_all('h1'):
+            for cont in tag.contents:
+                path_story += str(cont) + '\n'
 
-            for tag in soup.find_all('p'):
-                for cont in tag.contents:
-                    path_story += str(cont) + '\n'
-            tags_cleaner = re.compile('<.*?>')
-            clean_story = re.sub(tags_cleaner, '', path_story)
+        for tag in soup.find_all('p'):
+            for cont in tag.contents:
+                path_story += str(cont) + '\n'
+        tags_cleaner = re.compile('<.*?>')
+        clean_story = re.sub(tags_cleaner, '', path_story)
     except Exception as e:
         print(e)
     return clean_story
 
 
-def get_page_images_links(file_name):
+def get_page_images_links(txt):
     pattern = "/files/tracks/imgs/.*\.(?:png|jpg)"
     images_list = list()
     try:
-        with open(os.path.join(maslulim_output_folder_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
+        if len(txt) == 0:
+            print('Problem')
+        soup = bs(txt, 'html.parser')
+        # <img src="/files/tracks/hermonbanias_tmuna.jpg" style="float:right; width:68%; height:auto;">
+        image_section = soup.find("img", {"style": "float:right; width:68%; height:auto;"})
+        image_path = image_section.get('src')
+        if image_path:
+            image_link = maslulim_main_addr + image_path
+            images_list.append(image_link)
 
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
-            soup = bs(txt, 'html.parser')
-            # <img src="/files/tracks/hermonbanias_tmuna.jpg" style="float:right; width:68%; height:auto;">
-            image_section = soup.find("img", {"style": "float:right; width:68%; height:auto;"})
-            image_path = image_section.get('src')
-            if image_path:
-                image_link = maslulim_main_addr + image_path
-                images_list.append(image_link)
-
-            for match in re.findall(pattern, txt):
-                image_link = maslulim_main_addr + str(match)
-                # print(image_link)
-                images_list.append(image_link)
+        for match in re.findall(pattern, txt):
+            image_link = maslulim_main_addr + str(match)
+            # print(image_link)
+            images_list.append(image_link)
     except Exception as e:
         print(e)
     return images_list
