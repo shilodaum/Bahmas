@@ -2,30 +2,38 @@ from collections import Counter
 from functools import partial
 
 from super_vector import SuperVector
-from vectorizer.unigram_texts_vectorizer import get_features, tokenization, SUFFIXES, PREFIXES
+from vectorizer.bigram_texts_vectorizer import PREFIXES
+from vectorizer.unigram_texts_vectorizer import get_features, tokenization
 import pandas as pd
 
 
 def stemming(tokens, features):
-    # delete prefixes
+    """
+    filter out prefixes from words
+    :param words_list: list of words from text as [(word,count)...]
+    :param prefixes: prefixes
+    :return: filtered words
+    """
     new_tokens = []
-    for token in tokens:
-        if token in features:
-            new_tokens.append(token)
-        elif token[:1] in PREFIXES and token[1:] in features:
-            new_tokens.append(token[1:])
-        elif token[:2] in PREFIXES and token[2:] in features:
-            new_tokens.append(token[2:])
 
-    # delete suffixes
+    # delete two heh haydiaa: e.g: הנחל הגדול -> נחל גדול
+    for token in tokens:
+        word1, word2 = token.split(' ')
+        if word1[0] == 'ה' and word2[0] == 'ה':
+            new_token = word1[1:] + ' ' + word2[1:]
+            if new_token in features:
+                new_tokens.append(new_token)
+        elif token in features:
+            new_tokens.append(token)
+
     final_tokens = []
+
+    # delete prefixes
     for token in new_tokens:
-        if token in features:
+        if token[0] in PREFIXES and token[1:] in features:
+            final_tokens.append(token[1:])
+        elif token in features:
             final_tokens.append(token)
-        elif token[-1:] in SUFFIXES and token[:-1] in features:
-            final_tokens.append(token[:-1])
-        elif token[-2:] in SUFFIXES and token[:-2] in features:
-            final_tokens.append(token[:-2])
 
     return final_tokens
 
@@ -38,23 +46,16 @@ def vector_of_user(text):
     # Tokenization
     tokens = tokenization(text)
 
-    super_vec = SuperVector.parse(list(reversed(tokens)))
+    # Stemming
+    stemmed_tokens = stemming(tokens, features)
 
-    super_vec.apply_manipulation(partial(stemming, features=features))
+    # Create vector according to the features of the texts
+    vec_dict = dict((f, 0) for f in features)
+    for token in stemmed_tokens:
+        vec_dict[token] += 1
 
-    super_vec.apply_manipulation(Counter)
-
-    def add_missing_features(d):
-        features_dict = {f: 0 for f in features}
-        return {**features_dict, **d}
-
-    super_vec.apply_manipulation(add_missing_features)
-
-    # final_vec = pd.Series(vec_dict)
-    super_vec.apply_manipulation(pd.Series)
-
-    # return final_vec
-    return super_vec
+    final_vec = pd.Series(vec_dict)
+    return final_vec
 
 
 def main():
