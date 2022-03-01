@@ -112,7 +112,7 @@ def main():
     filepath = 'texts_vectors_bigrams.csv'
     # vectorizer.utils.show_df_csv(filepath)
     # print(vectorizer.utils.get_features('bigrams_features.json'))
-    download_df_csv(filepath)
+    # download_df_csv(filepath)
     save_features(filepath)
 
 

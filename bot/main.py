@@ -10,7 +10,6 @@ import vectorizer.bigram_user_vectorizer as bi_user
 from matcher import matcher
 
 
-
 def get_data(i):
     file = open('../createDB/paths_data.json')
     data = json.load(file)
