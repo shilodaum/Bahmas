@@ -7,9 +7,6 @@ print('dir',os.getcwd())
 if not os.getcwd().endswith('Bahmas'):
     if 'Bahmas' in os.getcwd():
         os.chdir('./..')
-    # else:
-    #     # raise Exception(f'{os.getcwd()}')
-    #     os.chdir('/app/.')
 
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
