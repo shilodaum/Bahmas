@@ -1,22 +1,25 @@
 import json
 import pandas as pd
+import os
+import re
+
+if not os.getcwd().endswith('Bahmas'):
+    os.chdir('./..')
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
-
 # from searcher.searcher import BaseSearcherInArray
 import vectorizer.unigram_user_vectorizer as uni_user
 import vectorizer.bigram_user_vectorizer as bi_user
 import matcher.matcher as matcher
 
 # TODO add path to bahmas
-
-uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.zip')
-bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.zip')
+uni_world = pd.read_csv('vectorizer/texts_vectors_unigrams.zip')
+bi_world = pd.read_csv('vectorizer/texts_vectors_bigrams.zip')
 
 
 def get_data(i):
-    file = open('../createDB/paths_data.json')
+    file = open('createDB/paths_data.json')
     data = json.load(file)
     path = data[i]
     return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
@@ -24,12 +27,14 @@ def get_data(i):
 
 def get_choice(update: Update, context: CallbackContext):
     call_back_data = int(update.callback_query.data)
-    name, site, description, images_links, map_link = get_data(call_back_data)
+    name, sites, description, images_links, map_link = get_data(call_back_data)
     update.callback_query.message.reply_text(name)
     update.callback_query.message.reply_text("אם אתה רוצה עוד מידע על המסלול :")
-    update.callback_query.message.reply_text(site[0], disable_web_page_preview=False)
-    update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
-    update.callback_query.message.reply_text(map_link, disable_web_page_preview=False)
+    if len(sites[0]) > 0:
+        update.callback_query.message.reply_text(sites[0], disable_web_page_preview=False)
+    if len(map_link) > 0:
+        update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
+        context.bot.send_photo(chat_id=update.callback_query.message.chat_id, photo=map_link)
     # update.callback_query.message.reply_text(images_links[0], disable_web_page_preview=False)
     for i in range(min(len(images_links), 3)):
         context.bot.send_photo(chat_id=update.callback_query.message.chat_id, photo=images_links[i])
@@ -64,8 +69,7 @@ def reply(update, context):
     for i in recommendations:
         title, site, description, images_links, map_link = get_data(i)
         # TODO use regex split to delete all -:., symbols
-        title = title.split(":")[0]
-        print(title)
+        title = re.split('[.:,-]', title)[0]
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
         """update.message.reply_text(str(rank) + ") " + title)
         update.message.reply_text(site, disable_web_page_preview=False)"""

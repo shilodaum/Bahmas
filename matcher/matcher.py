@@ -34,7 +34,7 @@ def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, 
     uni_dist_vec = calc_world_dist(world1, user_uni_vector, dist_method)
     bi_dist_vec = calc_world_dist(world2, user_bi_vector, dist_method)
 
-    return dist_interpolation(uni_dist_vec, bi_dist_vec, uni_weight=0)
+    return dist_interpolation(uni_dist_vec, bi_dist_vec, uni_weight=0.4)
 
 
 def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
@@ -42,4 +42,4 @@ def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_met
 
     max_indices = list(reversed(np.argsort(dist_vec.to_numpy())))
 
-    return max_indices[:10]
+    return max_indices[:5]

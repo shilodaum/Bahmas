@@ -1,6 +1,8 @@
 import warnings
 warnings.simplefilter('ignore')
-
+import os
+if not os.getcwd().endswith('Bahmas'):
+    os.chdir('./..')
 import json
 import os
 import time
@@ -44,7 +46,7 @@ def show_df_csv(filepath):
 
 
 def get_features(filepath):
-    with open('../vectorizer/' + filepath, 'r', encoding='utf-8') as f:
+    with open('vectorizer/' + filepath, 'r', encoding='utf-8') as f:
         features = json.load(f)
     return features
 
@@ -77,7 +79,7 @@ def get_list_of_words(filename):
     return expanded_words_list
 
 
-def get_list_of_texts(json_path=os.path.join('..', 'createDB', 'paths_data.json')):
+def get_list_of_texts(json_path=os.path.join('createDB', 'paths_data.json')):
     with open(json_path, 'r', encoding='utf-8') as f:
         elements_list = json.load(f)
         all_txt_files = [" ".join(tokenization(element['path_description'])) for element in elements_list]
