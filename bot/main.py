@@ -17,12 +17,12 @@ import vectorizer.bigram_user_vectorizer as bi_user
 import matcher.matcher as matcher
 
 # TODO add path to bahmas
-uni_world = pd.read_csv('vectorizer/texts_vectors_unigrams.zip')
-bi_world = pd.read_csv('vectorizer/texts_vectors_bigrams.zip')
+uni_world = pd.read_csv('./vectorizer/texts_vectors_unigrams.zip')
+bi_world = pd.read_csv('./vectorizer/texts_vectors_bigrams.zip')
 
 
 def get_data(i):
-    file = open('createDB/paths_data.json')
+    file = open('./createDB/paths_data.json')
     data = json.load(file)
     path = data[i]
     return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
