@@ -40,6 +40,6 @@ def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, 
 def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
     dist_vec = calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity)
 
-    max_indices = np.argsort(dist_vec.to_numpy())
+    max_indices = list(reversed(np.argsort(dist_vec.to_numpy())))
 
-    return max_indices[-5:]
+    return max_indices[:10]

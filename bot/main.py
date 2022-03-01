@@ -9,6 +9,11 @@ import vectorizer.unigram_user_vectorizer as uni_user
 import vectorizer.bigram_user_vectorizer as bi_user
 import matcher.matcher as matcher
 
+# TODO add path to bahmas
+
+uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.zip')
+bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.zip')
+
 
 def get_data(i):
     file = open('../createDB/paths_data.json')
@@ -40,8 +45,8 @@ def reply(update, context):
     update.message.reply_text("אני ממליץ לך על הטיולים הבאים ")
 
     # TODO: change it
-    uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv')
-    bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.csv')
+    # uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.zip')
+    # bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.zip')
 
     print('----------------building user vectors----------------')
     uni_vector = uni_user.vector_of_user(user_input)
@@ -58,10 +63,10 @@ def reply(update, context):
     keyboard = []
     for i in recommendations:
         title, site, description, images_links, map_link = get_data(i)
-        #TODO use regex split to delete all -:., symbols
+        # TODO use regex split to delete all -:., symbols
         title = title.split(":")[0]
         print(title)
-        keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=i)])
+        keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
         """update.message.reply_text(str(rank) + ") " + title)
         update.message.reply_text(site, disable_web_page_preview=False)"""
         # update.message.reply_photo(photo)
@@ -82,7 +87,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_photo("https://images.app.goo.gl/HkooWVK1gp22abs56")
 
     # get query from user
-    #TODO לשון פניה
+    # TODO לשון פניה
     update.message.reply_text(f'באיזה טיול אתה מעוניין?')
     dp = updater.dispatcher
     dp.add_handler(MessageHandler(Filters.text, reply))

@@ -13,10 +13,10 @@ def get_data(index):
 
 
 if __name__ == '__main__':
-    user_input = "עין חמד"
+    user_input = "טיול ג'יפים בדרום"
     print('--------------reading worlds--------------')
-    uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv')
-    bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.csv')
+    uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.zip')
+    bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.zip')
     print('--------------building user vectors--------------')
 
     uni_vector = uni_user.vector_of_user(user_input)

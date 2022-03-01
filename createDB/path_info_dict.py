@@ -23,7 +23,9 @@ def create_paths_info_tiuli():
     for file in html_files:
         print(file)
         file_info_dict = get_path_info_dict_tiuli(file)
-        path_list.append(file_info_dict)
+        # add only informative paths
+        if len(file_info_dict['path_description']) > 2 * len(file_info_dict['path_name']):
+            path_list.append(file_info_dict)
     with open("./paths_data_tiuli.json", 'w', encoding='utf-8') as f:
         json.dump(path_list, f)
 
@@ -55,7 +57,9 @@ def create_paths_info_maslulim():
         print(file)
         path_info_dict = get_path_info_dict_maslulim(file)
 
-        path_list.append(path_info_dict)
+        if len(path_info_dict['path_description']) > 2 * len(path_info_dict['path_name']):
+            path_list.append(path_info_dict)
+
     with open("paths_data_maslulim.json", 'w', encoding='utf-8') as f:
         json.dump(path_list, f)
 
@@ -129,8 +133,8 @@ def merge_path_names(dataset1, dataset2, output_filename='./paths_data_merged.js
 
 
 def main():
-    # create_paths_info_maslulim()
-    # create_paths_info_tiuli()
+    create_paths_info_maslulim()
+    create_paths_info_tiuli()
     merge_tiuli_maslulim()
 
 

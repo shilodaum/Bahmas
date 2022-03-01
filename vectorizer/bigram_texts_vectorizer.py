@@ -9,9 +9,6 @@ import bisect
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-tiuli_titles_folder_path = os.path.join('titles_tiuli')
-maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
-
 
 def count_vectorization_bigram(df):
     vec = CountVectorizer(stop_words=vectorizer.utils.get_stop_words(), ngram_range=(2, 2))
@@ -112,7 +109,7 @@ def main():
     filepath = 'texts_vectors_bigrams.csv'
     # vectorizer.utils.show_df_csv(filepath)
     # print(vectorizer.utils.get_features('bigrams_features.json'))
-    # download_df_csv(filepath)
+    download_df_csv(filepath)
     save_features(filepath)
 
 
