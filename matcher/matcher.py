@@ -15,7 +15,8 @@ def jaccard_similarity(vec1, vec2):
 def cos_similarity(vec1, vec2):
     vec1 = vec1.to_numpy()
     vec2 = vec2.to_numpy()
-
+    if (np.linalg.norm(vec1) * np.linalg.norm(vec2)) == 0:
+        return 0
     return vec1.dot(vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
 
 

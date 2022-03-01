@@ -12,6 +12,8 @@ import hebrew_tokenizer as ht
 import pandas as pd
 
 if 'Bahmas' in os.getcwd():
+    if not os.getcwd().endswith('Bahmas'):
+        os.chdir('..')
     directory = os.getcwd()
 else:
     directory = "/app"

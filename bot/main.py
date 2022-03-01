@@ -24,6 +24,8 @@ from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandle
 
 # from searcher.searcher import BaseSearcherInArray
 if 'Bahmas' in os.getcwd():
+    if not os.getcwd().endswith('Bahmas'):
+        os.chdir('..')
     directory = os.getcwd()
 else:
     directory = "/app"
@@ -84,7 +86,7 @@ def reply(update, context):
     for i in recommendations:
         title, site, description, images_links, map_link = get_data(i)
         # TODO use regex split to delete all -:., symbols
-        title = re.split('[.:,-]', title)[0]
+        title = re.split('[.:-]', title)[0]
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
         """update.message.reply_text(str(rank) + ") " + title)
         update.message.reply_text(site, disable_web_page_preview=False)"""
