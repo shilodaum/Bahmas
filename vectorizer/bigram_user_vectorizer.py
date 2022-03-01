@@ -1,10 +1,11 @@
 from sklearn.feature_extraction.text import CountVectorizer
 
-from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization, get_stop_words
+from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization
+import vectorizer.utils as utils
 import pandas as pd
 
 def uni_tokens_2_bi_tokens(tokens):
-    vec = CountVectorizer(stop_words=get_stop_words(), ngram_range=(2, 2))
+    vec = CountVectorizer(stop_words=utils.get_stop_words(), ngram_range=(2, 2))
     vec.fit_transform(tokens)
     return vec.get_feature_names()
 
