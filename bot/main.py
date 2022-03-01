@@ -3,35 +3,37 @@ import pandas as pd
 import os
 import re
 
+# os.chdir(os.path.join('.', 'bot'))
 # print('dir', os.getcwd())
+# if not os.getcwd().endswith('bot'):
+#     # if 'Bahmas' in os.getcwd():
+#     os.chdir('./bot/')
+#     # print('new dir', os.getcwd())
+#     print('dir', os.getcwd())
+#     # insert at 1, 0 is the script path (or '' in REPL)
+# import sys
+#
+# sys.path.insert(0, './bot')
 
-if not os.getcwd().endswith('Bahmas'):
-    if 'Bahmas' in os.getcwd():
-        os.chdir('./..')
-        # print('new dir', os.getcwd())
-
-        # insert at 1, 0 is the script path (or '' in REPL)
-import sys
-sys.path.insert(0, '.')
 import vectorizer.unigram_user_vectorizer as uni_user
 import vectorizer.bigram_user_vectorizer as bi_user
 import matcher.matcher as matcher
 
-
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
-# from searcher.searcher import BaseSearcherInArray
 
+# from searcher.searcher import BaseSearcherInArray
+directory = os.getcwd()
 
 # TODO add path to bahmas
-uni_world = pd.read_csv('./vectorizer/texts_vectors_unigrams.zip')
-bi_world = pd.read_csv('./vectorizer/texts_vectors_bigrams.zip')
+uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'))
+bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'))
 
 
 def get_data(i):
-    file = open('./createDB/paths_data.json')
-    data = json.load(file)
-    path = data[i]
+    file = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))  # open('./createDB/paths_data.json')
+    # data = json.load(file)
+    path = file.iloc[i]
     return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
 
 
