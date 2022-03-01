@@ -22,7 +22,7 @@ def timeit(f):
 
 
 def get_stop_words():
-    return get_list_of_words("./heb_stop_words.txt")
+    return get_list_of_words("vectorizer/heb_stop_words.txt")
 
 
 def delete_rare_features(df, threshold=5):
@@ -78,8 +78,8 @@ def get_list_of_words(filename):
 
     return expanded_words_list
 
-
-def get_list_of_texts(json_path=os.path.join('createDB', 'paths_data.json')):
+#TODO write back to 'paths_data.json' without tiuli
+def get_list_of_texts(json_path=os.path.join('createDB', 'paths_data_tiuli.json')):
     with open(json_path, 'r', encoding='utf-8') as f:
         elements_list = json.load(f)
         all_txt_files = [" ".join(tokenization(element['path_description'])) for element in elements_list]

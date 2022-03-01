@@ -8,16 +8,13 @@ from vectorizer.utils import get_stop_words, delete_rare_features, normalize_row
 
 from sklearn.feature_extraction.text import CountVectorizer
 
-tiuli_titles_folder_path = os.path.join('titles_tiuli')
-maslulim_israel_titles_folder_path = os.path.join('titles_maslulim_israel')
-
 
 def count_vectorization(df):
     vec = CountVectorizer(stop_words=get_stop_words())
 
     # fit the countVectorizer on the train's features
     train = vec.fit_transform(df)
-    with open('../visualization/x_transformed.pickle', 'wb') as f:
+    with open('visualization/x_transformed.pickle', 'wb') as f:
         pickle.dump(train, f)
     X_train = pd.DataFrame(train.toarray(), columns=vec.get_feature_names())
 
@@ -84,7 +81,7 @@ def download_df_csv(filepath):
     df = delete_rare_features(df)
     print('-----------------------normalizing values-----------------------')
     df = normalize_rows(df)
-    df.to_csv(filepath, index=False)
+    df.to_csv(filepath, index=False, compression='zip')
 
 
 def save_features(filepath):
@@ -102,11 +99,12 @@ def add_new_trips(json_path, df_path):
     df = stemming(new_df)
     df = normalize_rows(df)
     df.fillna(0)
-    df.to_csv(df_path, index=False)
+    df.to_csv(df_path, index=False, compression="zip")
 
-#TODO save files as zip not as csv
+
+# TODO save files as zip not as csv
 def main():
-    filepath = 'texts_vectors_unigrams.csv'
+    filepath = 'texts_vectors_unigrams.zip'
     # print(show_df_csv(filepath))
     download_df_csv(filepath)
     save_features(filepath)

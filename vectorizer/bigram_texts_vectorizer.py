@@ -15,7 +15,7 @@ def count_vectorization_bigram(df):
 
     # fit the countVectorizer on the train's features
     train = vec.fit_transform(df)
-    with open('../visualization/x_transformed.pickle', 'wb') as f:
+    with open('visualization/x_transformed.pickle', 'wb') as f:
         pickle.dump(train, f)
     X_train = pd.DataFrame(train.toarray(), columns=vec.get_feature_names())
 
@@ -84,7 +84,7 @@ def download_df_csv(filepath):
     df = delete_rare_features_bigram(df)
     print('----------start to normalize rows-------------')
     df = vectorizer.utils.normalize_rows(df)
-    df.to_csv(filepath, index=False)
+    df.to_csv(filepath, index=False, compression='zip')
 
 
 def save_features(filepath):
@@ -102,11 +102,11 @@ def add_new_trips(json_path, df_path):
     df = stemming(new_df)
     df = vectorizer.utils.normalize_rows(df)
     df.fillna(0)
-    df.to_csv(df_path, index=False)
+    df.to_csv(df_path, index=False, compression='zip')
 
 
 def main():
-    filepath = 'texts_vectors_bigrams.csv'
+    filepath = 'texts_vectors_bigrams.zip'
     # vectorizer.utils.show_df_csv(filepath)
     # print(vectorizer.utils.get_features('bigrams_features.json'))
     download_df_csv(filepath)
