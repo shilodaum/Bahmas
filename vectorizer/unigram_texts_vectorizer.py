@@ -94,6 +94,15 @@ def save_features(filepath):
         json.dump(features, f)
 
 
+def add_new_trips(json_path, df_path):
+    texts_list = get_list_of_texts(json_path)
+    new_trips_df = count_vectorization(texts_list)
+    original_df = pd.read_csv(df_path)
+    new_df = pd.concat([original_df, new_trips_df], ignore_index=True, sort=False)
+    df = stemming(new_df)
+    df = normalize_rows(df)
+    df.to_csv(df_path, index=False)
+
 def main():
     filepath = 'texts_vectors_unigrams.csv'
     # print(show_df_csv(filepath))
