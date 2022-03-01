@@ -1,8 +1,8 @@
 import warnings
 warnings.simplefilter('ignore')
 import os
-if not os.getcwd().endswith('Bahmas'):
-    os.chdir('./..')
+# if not os.getcwd().endswith('Bahmas'):
+#     os.chdir('./..')
 import json
 import os
 import time
@@ -10,6 +10,11 @@ import bisect
 
 import hebrew_tokenizer as ht
 import pandas as pd
+
+if 'Bahmas' in os.getcwd():
+    directory = os.getcwd()
+else:
+    directory = "/app"
 
 
 def timeit(f):
@@ -46,7 +51,7 @@ def show_df_csv(filepath):
 
 
 def get_features(filepath):
-    with open('vectorizer/' + filepath, 'r', encoding='utf-8') as f:
+    with open(os.path.join(directory,'vectorizer',filepath), 'r', encoding='utf-8') as f:
         features = json.load(f)
     return features
 

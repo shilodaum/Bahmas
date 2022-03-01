@@ -1,8 +1,8 @@
 import pandas as pd
 import os
 
-if not os.getcwd().endswith('Bahmas'):
-    os.chdir('./..')
+# if not os.getcwd().endswith('Bahmas'):
+#     os.chdir('./..')
 
 import vectorizer.unigram_user_vectorizer as uni_user
 import vectorizer.bigram_user_vectorizer as bi_user
