@@ -8,9 +8,14 @@ not_words = ["לא", "ללא", "חסר", "בלי"]
 
 connections_map = {}
 connections_map.update({word: min for word in and_words})
+print('1: ', connections_map)
 connections_map.update({word: max for word in or_words})
+print('2: ', connections_map)
 connections_map.update({word: min for word in not_words})
+print('3: ', connections_map)
 
+if __name__ == '__main__':
+    pass
 
 class SuperVector:
     def __init__(self, left, right, connection):

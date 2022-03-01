@@ -101,7 +101,9 @@ def add_new_trips(json_path, df_path):
     new_df = pd.concat([original_df, new_trips_df], ignore_index=True, sort=False)
     df = stemming(new_df)
     df = normalize_rows(df)
+    df.fillna(0)
     df.to_csv(df_path, index=False)
+
 
 def main():
     filepath = 'texts_vectors_unigrams.csv'

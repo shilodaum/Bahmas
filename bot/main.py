@@ -4,8 +4,11 @@ import pandas as pd
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
-from matcher.searcher import BaseSearcherInArray
-from vectorizer.unigram_user_vectorizer import vector_of_user
+# from searcher.searcher import BaseSearcherInArray
+import vectorizer.unigram_user_vectorizer as uni_user
+import vectorizer.bigram_user_vectorizer as bi_user
+from matcher import matcher
+
 
 
 def get_data(i):
@@ -37,11 +40,18 @@ def reply(update, context):
     update.message.reply_text("אתה מעוניין בטיול " + user_input)
     update.message.reply_text("אני ממליץ לך על הטיולים הבאים ")
 
-    world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv').to_numpy()
-    vector = vector_of_user(user_input)
-    vector.apply_manipulation(pd.Series.to_numpy)
-    searcher = BaseSearcherInArray(vector, world)
-    recommendations = searcher.search()
+    # TODO: change it
+    uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv')
+    bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.csv')
+
+    uni_vector = uni_user.vector_of_user(user_input)
+    bi_vector = bi_user.vector_of_user(user_input)
+
+    recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
+
+    # vector.apply_manipulation(pd.Series.to_numpy)
+    # searcher = BaseSearcherInArray(vector, world)
+    # recommendations = searcher.search()
 
     rank = 1
     keyboard = []
@@ -75,8 +85,6 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 updater = Updater("5117463685:AAGDzPkJxZ7whs36ZumgdkyifMO5OP51gIM")
-
 updater.dispatcher.add_handler(CommandHandler('start', start))
-
 updater.start_polling()
 updater.idle()

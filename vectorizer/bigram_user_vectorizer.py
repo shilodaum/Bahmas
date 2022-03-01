@@ -1,7 +1,3 @@
-from collections import Counter
-from functools import partial
-
-from super_vector import SuperVector
 from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization
 import pandas as pd
 
