@@ -7,6 +7,7 @@ if not os.getcwd().endswith('Bahmas'):
     if 'Bahmas' in os.getcwd():
         os.chdir('./..')
     else:
+        raise Exception(f'{os.getcwd()}')
         os.chdir('./Bahmas')
 
 
