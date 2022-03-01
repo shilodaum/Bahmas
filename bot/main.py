@@ -3,18 +3,25 @@ import pandas as pd
 import os
 import re
 
-print('dir',os.getcwd())
+# print('dir', os.getcwd())
+
 if not os.getcwd().endswith('Bahmas'):
     if 'Bahmas' in os.getcwd():
         os.chdir('./..')
+        # print('new dir', os.getcwd())
+
+        # insert at 1, 0 is the script path (or '' in REPL)
+import sys
+sys.path.insert(0, '.')
+import vectorizer.unigram_user_vectorizer as uni_user
+import vectorizer.bigram_user_vectorizer as bi_user
+import matcher.matcher as matcher
 
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 # from searcher.searcher import BaseSearcherInArray
-import vectorizer.unigram_user_vectorizer as uni_user
-import vectorizer.bigram_user_vectorizer as bi_user
-import matcher.matcher as matcher
+
 
 # TODO add path to bahmas
 uni_world = pd.read_csv('./vectorizer/texts_vectors_unigrams.zip')
