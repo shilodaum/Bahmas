@@ -4,7 +4,11 @@ import os
 import re
 
 if not os.getcwd().endswith('Bahmas'):
-    os.chdir('./..')
+    if 'Bahmas' in os.getcwd():
+        os.chdir('./..')
+    else:
+        os.chdir('./Bahmas')
+
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
