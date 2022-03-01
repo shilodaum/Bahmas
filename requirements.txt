@@ -1,0 +1,10 @@
+pandas~=1.4.1
+telegram~=0.0.1
+numpy~=1.22.2
+requests~=2.27.1
+bs4~=0.0.1
+beautifulsoup4~=4.10.0
+scikit-learn~=1.0.2
+matplotlib~=3.5.1
+hebrew_tokenizer
+python-telegram-bot
