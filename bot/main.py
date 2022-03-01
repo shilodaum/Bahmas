@@ -23,7 +23,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMe
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
 # from searcher.searcher import BaseSearcherInArray
-directory = os.getcwd() or "/app"
+directory = "/app"
 
 # TODO add path to bahmas
 uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'))
