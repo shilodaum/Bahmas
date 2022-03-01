@@ -108,7 +108,7 @@ def add_new_trips(json_path, df_path):
 def main():
     filepath = 'texts_vectors_unigrams.csv'
     # print(show_df_csv(filepath))
-    download_df_csv(filepath)
+    # download_df_csv(filepath)
     save_features(filepath)
 
 

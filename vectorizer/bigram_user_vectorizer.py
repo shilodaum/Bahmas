@@ -1,5 +1,13 @@
+from sklearn.feature_extraction.text import CountVectorizer
+
 from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization
+import vectorizer.utils as utils
 import pandas as pd
+
+def uni_tokens_2_bi_tokens(tokens):
+    vec = CountVectorizer(stop_words=utils.get_stop_words(), ngram_range=(2, 2))
+    vec.fit_transform(tokens)
+    return vec.get_feature_names()
 
 
 def stemming(tokens, features):
@@ -41,8 +49,10 @@ def vector_of_user(text):
     # Tokenization
     tokens = tokenization(text)
 
+    tokens_bigrams = uni_tokens_2_bi_tokens([" ".join(tokens)])
+
     # Stemming
-    stemmed_tokens = stemming(tokens, features)
+    stemmed_tokens = stemming(tokens_bigrams, features)
 
     # Create vector according to the features of the texts
     vec_dict = dict((f, 0) for f in features)

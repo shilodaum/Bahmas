@@ -7,15 +7,14 @@ from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandle
 # from searcher.searcher import BaseSearcherInArray
 import vectorizer.unigram_user_vectorizer as uni_user
 import vectorizer.bigram_user_vectorizer as bi_user
-from matcher import matcher
-
+import matcher.matcher as matcher
 
 
 def get_data(i):
     file = open('../createDB/paths_data.json')
     data = json.load(file)
     path = data[i]
-    return path['path_name'], path['path_tiuli_link'], path['path_description'], path['images_links'], path['map_link']
+    return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
 
 
 def get_choice(update: Update, context: CallbackContext):
@@ -23,7 +22,7 @@ def get_choice(update: Update, context: CallbackContext):
     name, site, description, images_links, map_link = get_data(call_back_data)
     update.callback_query.message.reply_text(name)
     update.callback_query.message.reply_text("אם אתה רוצה עוד מידע על המסלול :")
-    update.callback_query.message.reply_text(site, disable_web_page_preview=False)
+    update.callback_query.message.reply_text(site[0], disable_web_page_preview=False)
     update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
     update.callback_query.message.reply_text(map_link, disable_web_page_preview=False)
     # update.callback_query.message.reply_text(images_links[0], disable_web_page_preview=False)
@@ -44,9 +43,11 @@ def reply(update, context):
     uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv')
     bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.csv')
 
+    print('----------------building user vectors----------------')
     uni_vector = uni_user.vector_of_user(user_input)
     bi_vector = bi_user.vector_of_user(user_input)
 
+    print('----------------getting recommendations----------------')
     recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
 
     # vector.apply_manipulation(pd.Series.to_numpy)
@@ -57,7 +58,9 @@ def reply(update, context):
     keyboard = []
     for i in recommendations:
         title, site, description, images_links, map_link = get_data(i)
+        #TODO use regex split to delete all -:., symbols
         title = title.split(":")[0]
+        print(title)
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=i)])
         """update.message.reply_text(str(rank) + ") " + title)
         update.message.reply_text(site, disable_web_page_preview=False)"""
@@ -79,6 +82,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_photo("https://images.app.goo.gl/HkooWVK1gp22abs56")
 
     # get query from user
+    #TODO לשון פניה
     update.message.reply_text(f'באיזה טיול אתה מעוניין?')
     dp = updater.dispatcher
     dp.add_handler(MessageHandler(Filters.text, reply))

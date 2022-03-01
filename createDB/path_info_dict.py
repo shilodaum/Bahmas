@@ -129,8 +129,8 @@ def merge_path_names(dataset1, dataset2, output_filename='./paths_data_merged.js
 
 
 def main():
-    create_paths_info_maslulim()
-    create_paths_info_tiuli()
+    # create_paths_info_maslulim()
+    # create_paths_info_tiuli()
     merge_tiuli_maslulim()
 
 
