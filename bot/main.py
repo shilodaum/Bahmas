@@ -3,12 +3,13 @@ import pandas as pd
 import os
 import re
 
+print('dir',os.getcwd())
 if not os.getcwd().endswith('Bahmas'):
     if 'Bahmas' in os.getcwd():
         os.chdir('./..')
     else:
-        raise Exception(f'{os.getcwd()}')
-        os.chdir('./Bahmas')
+        # raise Exception(f'{os.getcwd()}')
+        os.chdir('./app/.')
 
 
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMediaPhoto
