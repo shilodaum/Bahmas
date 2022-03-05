@@ -12,41 +12,42 @@ def index_to_file_name(index):
     return str(index) + '.html'
 
 
-def get_page_title(file_name):
+def get_html_text(file_name):
+    with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
+        txt = f.read()
+    return txt
+
+
+def get_page_title(txt):
     title = ''
     try:
-        with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
 
-            soup = bs(txt, 'html.parser')
+        soup = bs(txt, 'html.parser')
 
-            title = soup.find('h1').contents[0]
-            # print(title)
+        title = soup.find('h1').contents[0]
+        # print(title)
     except Exception as e:
         print(e)
     return str(title)
 
 
-def get_page_images_links(file_name):
+def get_page_images_links(txt):
     images_list = list()
     try:
-        with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
+        if len(txt) == 0:
+            print('Problem')
+        soup = bs(txt, 'html.parser')
 
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
-            soup = bs(txt, 'html.parser')
-
-            images_section = soup.find("section", {"id": "gallery-grid"})
-            images_section_soup = bs(str(images_section), 'html.parser')
-            for tag in images_section_soup.find_all('img'):
-                image_link = tag.get('data-src')
-                if image_link and image_link not in images_list:
-                    images_list.append(image_link)
-            for tag in images_section_soup.find_all('a'):
-                image_link = tag.get('data-thumb')
-                if image_link and image_link not in images_list:
-                    images_list.append(image_link)
+        images_section = soup.find("section", {"id": "gallery-grid"})
+        images_section_soup = bs(str(images_section), 'html.parser')
+        for tag in images_section_soup.find_all('img'):
+            image_link = tag.get('data-src')
+            if image_link and image_link not in images_list:
+                images_list.append(image_link)
+        for tag in images_section_soup.find_all('a'):
+            image_link = tag.get('data-thumb')
+            if image_link and image_link not in images_list:
+                images_list.append(image_link)
 
     except Exception as e:
         print(e)
@@ -54,66 +55,60 @@ def get_page_images_links(file_name):
 
 
 # <button class="mobx w-14 lg:w-auto -ml-1 lg:ml-3 flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1 focus:outline-none" data-src="https://www.tiuli.com/images/site/track_maps/map1.jpg">
-def get_map_link(file_name):
+def get_map_link(txt):
     image_link = ''
     try:
-        with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
 
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
-            soup = bs(txt, 'html.parser')
+        if len(txt) == 0:
+            print('Problem')
+        soup = bs(txt, 'html.parser')
 
-            map_tag = soup.find("button", {
-                'class': "mobx w-14 lg:w-auto -ml-1 lg:ml-3 flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1 focus:outline-none"})
-            if map_tag:
-                image_link = map_tag.get('data-src')
+        map_tag = soup.find("button", {
+            'class': "mobx w-14 lg:w-auto -ml-1 lg:ml-3 flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1 focus:outline-none"})
+        if map_tag:
+            image_link = map_tag.get('data-src')
     except Exception as e:
         print(e)
     return image_link
 
 
 # <a class="statboy flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1" data-mid="2" data-cid="1" data-tid="9" href="https://waze.com/ul?navigate=yes&amp;ll=33.0115,35.1826" rel="nofollow noopener noreferrer">
-def get_navigation_link(file_name):
+def get_navigation_link(txt):
     waze_link = ''
     try:
-        with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
 
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
-            soup = bs(txt, 'html.parser')
+        if len(txt) == 0:
+            print('Problem')
+        soup = bs(txt, 'html.parser')
 
-            map_tag = soup.find("a", {
-                'class': "statboy flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1"})
-            if map_tag:
-                waze_link = map_tag.get('href')
+        map_tag = soup.find("a", {
+            'class': "statboy flex flex-col flex-shrink-0 text-center lg:flex-row items-center lg:bg-grey-300 lg:rounded-full lg:px-3 lg:py-1"})
+        if map_tag:
+            waze_link = map_tag.get('href')
     except Exception as e:
         print(e)
     return waze_link
 
 
-def get_page_story(file_name):
+def get_page_story(txt):
     story = ''
+    clean_story = ''
     try:
-        with open(os.path.join(tiuli_output_path, file_name), 'r', encoding='utf-8') as f:
-            txt = f.read()
 
-            # delete irrelevant information
-            page_appendix = '<h2 class="heading-h2 mb-0">'
-            txt = txt[:txt.find(page_appendix)]
+        # delete irrelevant information
+        page_appendix = '<h2 class="heading-h2 mb-0">'
+        txt = txt[:txt.find(page_appendix)]
 
-            if len(txt) == 0:
-                print('Problem at ' + file_name)
-            soup = bs(txt, 'html.parser')
-            # TODO get additional fields from tiuli html
+        if len(txt) == 0:
+            print('Problem ')
+        soup = bs(txt, 'html.parser')
 
-            for tag in soup.find_all('p'):
-                for cont in tag.contents:
-                    story += str(cont) + '\n'
-            tags_cleaner = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')  # re.compile('<.*?>') CLEANR =
+        for tag in soup.find_all('p'):
+            for cont in tag.contents:
+                story += str(cont) + '\n'
+        tags_cleaner = re.compile('<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});')  # re.compile('<.*?>') CLEANR =
 
-            clean_story = re.sub(tags_cleaner, '', story)
+        clean_story = re.sub(tags_cleaner, '', story)
 
     except Exception as e:
         print(e)
