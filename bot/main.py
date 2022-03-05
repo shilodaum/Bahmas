@@ -1,6 +1,7 @@
 import json
 import pandas as pd
 import os
+import psutil
 import re
 import numpy as np
 import sys
@@ -31,21 +32,26 @@ if 'Bahmas' in os.getcwd():
 else:
     directory = "/app"
 
+print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2, "MB used")
+
 # TODO add path to bahmas
 uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'), dtype=np.int8)
 # print(uni_world.dtypes)
 bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'), dtype=np.int8)
 
-print(f'uni size: {sys.getsizeof(uni_world)}')
-print(f'bi size: {sys.getsizeof(bi_world)}')
+all_paths = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))
+
+# print(f'uni size: {sys.getsizeof(uni_world)}')
+# print(f'bi size: {sys.getsizeof(bi_world)}')
+
+# MB used by this process
+print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2, "MB used")
 
 
 def get_data(i):
-    file = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))  # open('./createDB/paths_data.json')
     # data = json.load(file)
-    path = file.iloc[i]
+    path = all_paths.iloc[i]
 
-    print(path['path_name'])
     return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
 
 

@@ -8,3 +8,4 @@ scikit-learn~=1.0.2
 matplotlib~=3.5.1
 hebrew_tokenizer
 python-telegram-bot
+psutil~=5.9.0
