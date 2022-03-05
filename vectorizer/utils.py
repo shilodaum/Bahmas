@@ -85,8 +85,8 @@ def get_list_of_words(filename):
 
     return expanded_words_list
 
-#TODO write back to 'paths_data.json' without tiuli
-def get_list_of_texts(json_path=os.path.join('createDB', 'paths_data_tiuli.json')):
+
+def get_list_of_texts(json_path=os.path.join('createDB', 'paths_data.json')):
     with open(json_path, 'r', encoding='utf-8') as f:
         elements_list = json.load(f)
         all_txt_files = [" ".join(tokenization(element['path_description'])) for element in elements_list]

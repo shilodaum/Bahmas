@@ -2,13 +2,14 @@ import pandas as pd
 import os
 import json
 import pickle
-
+import numpy as np
 import vectorizer.utils
 from vectorizer.utils import in_sorted_list, BI_PREFIXES
 import bisect
 
 from sklearn.feature_extraction.text import CountVectorizer
 
+directory= 'vectorizer'
 
 def count_vectorization_bigram(df):
     vec = CountVectorizer(stop_words=vectorizer.utils.get_stop_words(), ngram_range=(2, 2))
@@ -83,12 +84,15 @@ def download_df_csv(filepath):
     print('----------start to delete rare feature-------------')
     df = delete_rare_features_bigram(df)
     print('----------start to normalize rows-------------')
-    df = vectorizer.utils.normalize_rows(df)
-    df.to_csv(filepath, index=False, compression='zip')
+    #TODO maybe uint
+    df = df.astype(np.int8)
+    # df = vectorizer.utils.normalize_rows(df)
+    print('-----------------------saving to file-----------------------')
+    df.to_csv(os.path.join(directory,filepath), index=False, compression='zip')
 
 
 def save_features(filepath):
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(os.path.join(directory,filepath))
     features = list(df.columns)
     with open('bigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
@@ -100,7 +104,7 @@ def add_new_trips(json_path, df_path):
     original_df = pd.read_csv(df_path)
     new_df = pd.concat([original_df, new_trips_df], ignore_index=True, sort=False)
     df = stemming(new_df)
-    df = vectorizer.utils.normalize_rows(df)
+    # df = vectorizer.utils.normalize_rows(df)
     df.fillna(0)
     df.to_csv(df_path, index=False, compression='zip')
 

@@ -2,7 +2,8 @@ import json
 import pandas as pd
 import os
 import re
-
+import numpy as np
+import sys
 # os.chdir(os.path.join('.', 'bot'))
 # print('dir', os.getcwd())
 # if not os.getcwd().endswith('bot'):
@@ -31,14 +32,20 @@ else:
     directory = "/app"
 
 # TODO add path to bahmas
-uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'))
-bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'))
+uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'), dtype=np.int8)
+# print(uni_world.dtypes)
+bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'), dtype=np.int8)
+
+print(f'uni size: {sys.getsizeof(uni_world)}')
+print(f'bi size: {sys.getsizeof(bi_world)}')
 
 
 def get_data(i):
     file = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))  # open('./createDB/paths_data.json')
     # data = json.load(file)
     path = file.iloc[i]
+
+    print(path['path_name'])
     return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
 
 
@@ -85,8 +92,7 @@ def reply(update, context):
     keyboard = []
     for i in recommendations:
         title, site, description, images_links, map_link = get_data(i)
-        # TODO use regex split to delete all -:., symbols
-        title = re.split('[.:-]', title)[0]
+        title = re.split('[<>.:-]', title)[0]
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
         """update.message.reply_text(str(rank) + ") " + title)
         update.message.reply_text(site, disable_web_page_preview=False)"""

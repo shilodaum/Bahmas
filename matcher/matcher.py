@@ -31,7 +31,7 @@ def calc_world_dist(world, user_vector, dist_method):
     return world.apply(calc_dist_row, axis=1)
 
 
-def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
+def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method):
     uni_dist_vec = calc_world_dist(world1, user_uni_vector, dist_method)
     bi_dist_vec = calc_world_dist(world2, user_bi_vector, dist_method)
 
@@ -39,7 +39,7 @@ def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, 
 
 
 def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
-    dist_vec = calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity)
+    dist_vec = calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=dist_method)
 
     max_indices = list(reversed(np.argsort(dist_vec.to_numpy())))
 

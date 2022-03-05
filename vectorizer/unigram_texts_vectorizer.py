@@ -3,11 +3,13 @@ import os
 import json
 import pickle
 import bisect
+import numpy as np
 from vectorizer.utils import get_stop_words, delete_rare_features, normalize_rows, show_df_csv, \
     in_sorted_list, UNI_PREFIXES, UNI_SUFFIXES, get_list_of_texts
-
 from sklearn.feature_extraction.text import CountVectorizer
 
+
+directory= 'vectorizer'
 
 def count_vectorization(df):
     vec = CountVectorizer(stop_words=get_stop_words())
@@ -80,12 +82,17 @@ def download_df_csv(filepath):
     print('-----------------------deleteing rare words-----------------------')
     df = delete_rare_features(df)
     print('-----------------------normalizing values-----------------------')
-    df = normalize_rows(df)
-    df.to_csv(filepath, index=False, compression='zip')
+    df = df.astype(np.int8)
+    print(df)
+    print(df.dtypes)
+    # df = normalize_rows(df)
+    print('-----------------------saving to file-----------------------')
+
+    df.to_csv(os.path.join(directory,filepath), index=False, compression='zip')
 
 
 def save_features(filepath):
-    df = pd.read_csv(filepath)
+    df = pd.read_csv(os.path.join(directory,filepath))
     features = list(df.columns)
     with open('unigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
@@ -102,7 +109,7 @@ def add_new_trips(json_path, df_path):
     df.to_csv(df_path, index=False, compression="zip")
 
 
-# TODO save files as zip not as csv
+# TODO correct files paths
 def main():
     filepath = 'texts_vectors_unigrams.zip'
     # print(show_df_csv(filepath))
