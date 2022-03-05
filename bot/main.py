@@ -36,10 +36,11 @@ print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2, "MB used")
 
 # TODO add path to bahmas
 uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'), dtype=np.int8)
-# print(uni_world.dtypes)
+print('read uni world')
 bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'), dtype=np.int8)
-
+print('read bi world')
 all_paths = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))
+print('read all paths')
 
 # print(f'uni size: {sys.getsizeof(uni_world)}')
 # print(f'bi size: {sys.getsizeof(bi_world)}')
@@ -127,6 +128,8 @@ def start(update: Update, context: CallbackContext) -> None:
 
 
 updater = Updater("5117463685:AAGDzPkJxZ7whs36ZumgdkyifMO5OP51gIM")
+print('created updater')
 updater.dispatcher.add_handler(CommandHandler('start', start))
+print('strat command')
 updater.start_polling()
 updater.idle()
