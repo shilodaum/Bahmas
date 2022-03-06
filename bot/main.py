@@ -40,7 +40,6 @@ else:
 
 print(psutil.Process(os.getpid()).memory_info().rss / 1024 ** 2, "MB used")
 
-# TODO add path to bahmas
 uni_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_unigrams.zip'), dtype=np.int8)
 print('read uni world')
 bi_world = pd.read_csv(os.path.join(directory, 'vectorizer', 'texts_vectors_bigrams.zip'), dtype=np.int8)
@@ -59,24 +58,26 @@ def get_data(i):
     # data = json.load(file)
     path = all_paths.iloc[i]
 
-    return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link']
+    return path['path_name'], path['path_links'], path['path_description'], path['images_links'], path['map_link'], \
+           path['navigation']
 
 
 def get_choice(update: Update, context: CallbackContext):
     call_back_data = int(update.callback_query.data)
-    name, sites, description, images_links, map_link = get_data(call_back_data)
+    name, sites, description, images_links, map_link, waze_link = get_data(call_back_data)
     update.callback_query.message.reply_text(name)
-    update.callback_query.message.reply_text("אם אתה רוצה עוד מידע על המסלול :")
+    update.callback_query.message.reply_text("אם את.ה רוצה עוד מידע על המסלול :")
     if len(sites[0]) > 0:
         update.callback_query.message.reply_text(sites[0], disable_web_page_preview=False)
     if len(map_link) > 0:
-        update.callback_query.message.reply_text("החלטת? תתחיל לנווט :")
+        update.callback_query.message.reply_text("החלטת? תתחיל.י לנווט :")
+        update.callback_query.message.reply_text(waze_link)
         context.bot.send_photo(chat_id=update.callback_query.message.chat_id, photo=map_link)
     # update.callback_query.message.reply_text(images_links[0], disable_web_page_preview=False)
     for i in range(min(len(images_links), 3)):
         context.bot.send_photo(chat_id=update.callback_query.message.chat_id, photo=images_links[i])
     if IS_ESTIMATION:
-        update.callback_query.message.reply_text("נשמח אם תיתן לנו משוב :")
+        update.callback_query.message.reply_text("נשמח אם תיתן.י לנו משוב :")
         update.callback_query.message.reply_text("https://forms.gle/6FnxZJem2VYeRUCM6", disable_web_page_preview=False)
 
 
@@ -84,21 +85,14 @@ def reply(update, context):
     """context.bot.delete_messages(chat_id=update.message.chat_id,
                                message_id=update.message.message_id)"""
     user_input = update.message.text
-    update.message.reply_text("אתה מעוניין בטיול " + user_input)
-    update.message.reply_text("אני ממליץ לך על הטיולים הבאים ")
-
-    # TODO: change it
-    # uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.zip')
-    # bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.zip')
+    update.message.reply_text("רק שניה...")
 
     print('----------------building user vectors----------------')
     uni_vector = uni_user.vector_of_user(user_input)
     bi_vector = bi_user.vector_of_user(user_input)
 
     print('----------------getting recommendations----------------')
-    # recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
 
-    # vector.apply_manipulation(pd.Series.to_numpy)
     vector = SuperVector(uni_vector, bi_vector, "interp")
     searcher = InterpolationSearcher(vector, uni_world, bi_world)
     recommendations = searcher.search()
@@ -114,12 +108,12 @@ def reply(update, context):
     rank = 1
     keyboard = []
     for i in recommendations[0][:5]:
-        title, site, description, images_links, map_link = get_data(i)
+        title, site, description, images_links, map_link, waze_link = get_data(i)
         title = re.split('[<>.:-]', title)[0]
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
         rank += 1
     reply_markup = InlineKeyboardMarkup(keyboard)
-    update.message.reply_text('לחץ על מסלול שאתה מתעניין בו',
+    update.message.reply_text('בחר.י מסלול לפירוט',
                               reply_markup=reply_markup)
 
     dp = context.dispatcher
@@ -134,8 +128,7 @@ def start(update: Update, context: CallbackContext) -> None:
     update.message.reply_photo("https://images.app.goo.gl/HkooWVK1gp22abs56")
 
     # get query from user
-    # TODO לשון פניה
-    update.message.reply_text(f'באיזה טיול אתה מעוניין?')
+    update.message.reply_text(f'באיזה טיול את.ה מעוניין.ת?')
     dp = updater.dispatcher
     dp.add_handler(MessageHandler(Filters.text, reply))
 
