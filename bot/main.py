@@ -38,16 +38,20 @@ def reply(update, context):
     update.message.reply_text("אתה מעוניין בטיול " + user_input)
     update.message.reply_text("אני ממליץ לך על הטיולים הבאים ")
 
-    # TODO: change it
     uni_world = pd.read_csv('../vectorizer/texts_vectors_unigrams.csv')
     bi_world = pd.read_csv('../vectorizer/texts_vectors_bigrams.csv')
 
     print('----------------building user vectors----------------')
     uni_vector = uni_user.vector_of_user(user_input)
-    bi_vector = bi_user.vector_of_user(user_input)
 
     print('----------------getting recommendations----------------')
-    recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
+
+    if len(user_input) > 1:
+        bi_vector = bi_user.vector_of_user(user_input)
+        recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
+
+    else:
+        recommendations = matcher.get_recommendation_uni(uni_world, uni_vector)
 
     # vector.apply_manipulation(pd.Series.to_numpy)
     # searcher = BaseSearcherInArray(vector, world)

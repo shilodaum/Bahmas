@@ -43,3 +43,8 @@ def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_met
     max_indices = np.argsort(dist_vec.to_numpy())
 
     return max_indices[-5:]
+
+def get_recommendation_uni(world1, user_uni_vector, dist_method=cos_similarity):
+    uni_dist_vec = calc_world_dist(world1, user_uni_vector, dist_method)
+    max_indices = np.argsort(uni_dist_vec.to_numpy())
+    return max_indices[-5:]
