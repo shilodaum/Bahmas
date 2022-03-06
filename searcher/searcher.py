@@ -51,11 +51,22 @@ class InterpolationSearcher(Searcher):
             val1 = self.super_vector.left.apply_sim_func(partial_func_1)
             val2 = self.super_vector.right.apply_sim_func(partial_func_2)
 
-            return interpolation(val1, val2) if not np.isnan(val1) and not np.isnan(val2) else float("-inf")
+            if np.isnan(val1):
+                if np.isnan(val2):
+                    return float("-inf")
+                return val2
+            if np.isnan(val2):
+                return val1
 
-        max_indices = sorted(list(range(self.world[0].shape[0])),
-                             key=key_func, reverse=True)
-        return max_indices[:5]
+            return interpolation(val1, val2)
+
+        # max_indices = sorted(list(range(self.world[0].shape[0])),
+        #                      key=key_func, reverse=True)
+        # return max_indices
+
+        recommendations = [(ind, key_func(ind)) for ind in range(self.world[0].shape[0])]
+        sorted_rec = sorted(recommendations, key=lambda el: el[1], reverse=True)
+        return [el[0] for el in sorted_rec], [el[1] for el in sorted_rec]
 
 
 # class AdamSearcher:

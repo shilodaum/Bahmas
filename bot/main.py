@@ -103,9 +103,17 @@ def reply(update, context):
     searcher = InterpolationSearcher(vector, uni_world, bi_world)
     recommendations = searcher.search()
 
+    if not os.path.isfile("entries.json"):
+        with open("entries.json", 'w'):
+            pass
+    with open('entries.json', 'a') as f:
+        to_write = [recommendations[j][i] for i in range(len(recommendations[0])) for j in range(2)]
+        val = json.dumps([user_input, *to_write])
+        f.write(val)
+
     rank = 1
     keyboard = []
-    for i in recommendations:
+    for i in recommendations[0][:5]:
         title, site, description, images_links, map_link = get_data(i)
         title = re.split('[<>.:-]', title)[0]
         keyboard.append([InlineKeyboardButton(str(rank) + ") " + title, callback_data=int(i))])
