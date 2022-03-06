@@ -1,11 +1,18 @@
+from collections import Counter
+from functools import partial
+
 from sklearn.feature_extraction.text import CountVectorizer
 
+from searcher.super_vector import SuperVector
 from vectorizer.utils import get_features, in_sorted_list, BI_PREFIXES, tokenization
 import vectorizer.utils as utils
 import pandas as pd
 
 
 def uni_tokens_2_bi_tokens(tokens):
+    if len(tokens) < 2:
+        return []
+    tokens = [' '.join(tokens)]
     #TODO understand why stopwords doesnt work
     vec = CountVectorizer(ngram_range=(2, 2))
     vec.fit_transform(tokens)
@@ -51,18 +58,48 @@ def vector_of_user(text):
     # Tokenization
     tokens = tokenization(text)
 
-    tokens_bigrams = uni_tokens_2_bi_tokens([" ".join(tokens)])
+    super_vec = SuperVector.parse(list(reversed(tokens)))
 
-    # Stemming
-    stemmed_tokens = stemming(tokens_bigrams, features)
+    super_vec.apply_manipulation(uni_tokens_2_bi_tokens)
+    # tokens_bigrams = uni_tokens_2_bi_tokens([" ".join(tokens)])
 
-    # Create vector according to the features of the texts
-    vec_dict = dict((f, 0) for f in features)
-    for token in stemmed_tokens:
-        vec_dict[token] += 1
+    super_vec.apply_manipulation(partial(stemming, features=features))
 
-    final_vec = pd.Series(vec_dict)
-    return final_vec
+    super_vec.apply_manipulation(Counter)
+
+    def add_missing_features(d):
+        features_dict = {f: 0 for f in features}
+        return {**features_dict, **d}
+
+    super_vec.apply_manipulation(add_missing_features)
+
+    # final_vec = pd.Series(vec_dict)
+    super_vec.apply_manipulation(pd.Series)
+
+    # return final_vec
+    return super_vec
+
+
+# def vector_of_user(text):
+#     filepath = "bigrams_features.json"
+#
+#     features = get_features(filepath)
+#
+#     # Tokenization
+#     tokens = tokenization(text)
+#
+#     tokens_bigrams = uni_tokens_2_bi_tokens([" ".join(tokens)])
+#
+#     # Stemming
+#     stemmed_tokens = stemming(tokens_bigrams, features)
+#
+#     # Create vector according to the features of the texts
+#     vec_dict = dict((f, 0) for f in features)
+#     for token in stemmed_tokens:
+#         vec_dict[token] += 1
+#
+#     final_vec = pd.Series(vec_dict)
+#     return final_vec
 
 
 def main():

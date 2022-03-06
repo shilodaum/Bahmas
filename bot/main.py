@@ -25,6 +25,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, InputMe
 from telegram.ext import Updater, CommandHandler, CallbackContext, MessageHandler, Filters, CallbackQueryHandler
 
 # global variables
+from searcher.searcher import InterpolationSearcher
+from searcher.super_vector import SuperVector
 
 IS_ESTIMATION = True
 
@@ -94,11 +96,12 @@ def reply(update, context):
     bi_vector = bi_user.vector_of_user(user_input)
 
     print('----------------getting recommendations----------------')
-    recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
+    # recommendations = matcher.get_recommendation(uni_world, bi_world, uni_vector, bi_vector)
 
     # vector.apply_manipulation(pd.Series.to_numpy)
-    # searcher = BaseSearcherInArray(vector, world)
-    # recommendations = searcher.search()
+    vector = SuperVector(uni_vector, bi_vector, "interp")
+    searcher = InterpolationSearcher(vector, uni_world, bi_world)
+    recommendations = searcher.search()
 
     rank = 1
     keyboard = []

@@ -1,3 +1,7 @@
+from collections import Counter
+from functools import partial
+
+from searcher.super_vector import SuperVector
 from vectorizer.utils import get_features, in_sorted_list, UNI_PREFIXES, UNI_SUFFIXES, tokenization
 import pandas as pd
 
@@ -26,33 +30,6 @@ def stemming(tokens, features):
     return final_tokens
 
 
-# def vector_of_user(text):
-#     filepath = "unigrams_features.json"
-#
-#     features = get_features(filepath)
-#
-#     # Tokenization
-#     tokens = tokenization(text)
-#
-#     super_vec = SuperVector.parse(list(reversed(tokens)))
-#
-#     super_vec.apply_manipulation(partial(stemming, features=features))
-#
-#     super_vec.apply_manipulation(Counter)
-#
-#     def add_missing_features(d):
-#         features_dict = {f: 0 for f in features}
-#         return {**features_dict, **d}
-#
-#     super_vec.apply_manipulation(add_missing_features)
-#
-#     # final_vec = pd.Series(vec_dict)
-#     super_vec.apply_manipulation(pd.Series)
-#
-#     # return final_vec
-#     return super_vec
-
-
 def vector_of_user(text):
     filepath = "unigrams_features.json"
 
@@ -61,16 +38,43 @@ def vector_of_user(text):
     # Tokenization
     tokens = tokenization(text)
 
-    # Stemming
-    stemmed_tokens = stemming(tokens, features)
+    super_vec = SuperVector.parse(list(reversed(tokens)))
 
-    # Create vector according to the features of the texts
-    vec_dict = dict((f, 0) for f in features)
-    for token in stemmed_tokens:
-        vec_dict[token] += 1
+    super_vec.apply_manipulation(partial(stemming, features=features))
 
-    final_vec = pd.Series(vec_dict)
-    return final_vec
+    super_vec.apply_manipulation(Counter)
+
+    def add_missing_features(d):
+        features_dict = {f: 0 for f in features}
+        return {**features_dict, **d}
+
+    super_vec.apply_manipulation(add_missing_features)
+
+    # final_vec = pd.Series(vec_dict)
+    super_vec.apply_manipulation(pd.Series)
+
+    # return final_vec
+    return super_vec
+
+
+# def vector_of_user(text):
+#     filepath = "unigrams_features.json"
+#
+#     features = get_features(filepath)
+#
+#     # Tokenization
+#     tokens = tokenization(text)
+#
+#     # Stemming
+#     stemmed_tokens = stemming(tokens, features)
+#
+#     # Create vector according to the features of the texts
+#     vec_dict = dict((f, 0) for f in features)
+#     for token in stemmed_tokens:
+#         vec_dict[token] += 1
+#
+#     final_vec = pd.Series(vec_dict)
+#     return final_vec
 
 
 def main():
