@@ -16,7 +16,7 @@ def count_vectorization_bigram(df):
 
     # fit the countVectorizer on the train's features
     train = vec.fit_transform(df)
-    with open('visualization/x_transformed.pickle', 'wb') as f:
+    with open('visualization/x_transformed2.pickle', 'wb') as f:
         pickle.dump(train, f)
     X_train = pd.DataFrame(train.toarray(), columns=vec.get_feature_names())
 

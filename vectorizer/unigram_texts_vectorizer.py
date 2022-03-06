@@ -9,7 +9,7 @@ from vectorizer.utils import get_stop_words, delete_rare_features, normalize_row
 from sklearn.feature_extraction.text import CountVectorizer
 
 
-directory= 'vectorizer'
+directory = 'vectorizer'
 
 def count_vectorization(df):
     vec = CountVectorizer(stop_words=get_stop_words())
