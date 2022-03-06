@@ -17,6 +17,7 @@ print('3: ', connections_map)
 if __name__ == '__main__':
     pass
 
+
 class SuperVector:
     def __init__(self, left, right, connection):
         self.left = left
