@@ -15,8 +15,7 @@ def jaccard_similarity(vec1, vec2):
 def cos_similarity(vec1, vec2):
     vec1 = vec1.to_numpy()
     vec2 = vec2.to_numpy()
-    if (np.linalg.norm(vec1) * np.linalg.norm(vec2)) == 0:
-        return 0
+
     return vec1.dot(vec2) / (np.linalg.norm(vec1) * np.linalg.norm(vec2))
 
 
@@ -31,16 +30,21 @@ def calc_world_dist(world, user_vector, dist_method):
     return world.apply(calc_dist_row, axis=1)
 
 
-def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method):
+def calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
     uni_dist_vec = calc_world_dist(world1, user_uni_vector, dist_method)
     bi_dist_vec = calc_world_dist(world2, user_bi_vector, dist_method)
 
-    return dist_interpolation(uni_dist_vec, bi_dist_vec, uni_weight=0.4)
+    return dist_interpolation(uni_dist_vec, bi_dist_vec, uni_weight=0)
 
 
 def get_recommendation(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity):
-    dist_vec = calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=dist_method)
+    dist_vec = calc_world_dist_bi_and_uni(world1, world2, user_uni_vector, user_bi_vector, dist_method=cos_similarity)
 
-    max_indices = list(reversed(np.argsort(dist_vec.to_numpy())))
+    max_indices = np.argsort(dist_vec.to_numpy())
 
-    return max_indices[:5]
+    return max_indices[-5:]
+
+def get_recommendation_uni(world1, user_uni_vector, dist_method=cos_similarity):
+    uni_dist_vec = calc_world_dist(world1, user_uni_vector, dist_method)
+    max_indices = np.argsort(uni_dist_vec.to_numpy())
+    return max_indices[-5:]
