@@ -4,18 +4,22 @@ import numpy as np
 
 and_words = ["וגם", "גם", "עם", "אך"]
 or_words = ["או"]
-not_words = ["לא", "ללא", "חסר", "בלי"]
+not_words = ["ולא", "לא", "ללא", "חסר", "ובלי", "בלי"]
 interpolation_words = ["interp"]
 
 connections_map = {}
 connections_map.update({word: min for word in and_words})
-print('1: ', connections_map)
+# print('1: ', connections_map)
 connections_map.update({word: max for word in or_words})
-print('2: ', connections_map)
+# print('2: ', connections_map)
 connections_map.update({word: min for word in not_words})
-print('3: ', connections_map)
+
+
+# print('3: ', connections_map)
 def interpolation(x, y, const=0.4):
     return const * x + (1 - const) * y
+
+
 connections_map.update({word: interpolation for word in interpolation_words})
 
 if __name__ == '__main__':
