@@ -2,6 +2,8 @@ from functools import partial
 
 import numpy as np
 
+from searcher.super_vector import interpolation
+
 
 class Searcher:
     def __init__(self, super_vector, world):
@@ -34,6 +36,38 @@ class BaseSearcherInArray(Searcher):
         max_indices = sorted(list(range(len(self.world))),
                              key=key_func, reverse=True)
         return max_indices[:5]
+
+
+class InterpolationSearcher(Searcher):
+    def __init__(self, super_vector, world1, world2):
+        super().__init__(super_vector, (world1, world2))
+        self.sim_func = self.cos_similarity
+        # self.sim_func = self.jaccard_similarity
+
+    def search(self):
+        def key_func(index):
+            partial_func_1 = partial(self.sim_func, self.world[0].iloc[index])
+            partial_func_2 = partial(self.sim_func, self.world[1].iloc[index])
+            val1 = self.super_vector.left.apply_sim_func(partial_func_1)
+            val2 = self.super_vector.right.apply_sim_func(partial_func_2)
+
+            if np.isnan(val1):
+                if np.isnan(val2):
+                    return float("-inf")
+                return val2
+            if np.isnan(val2):
+                return val1
+
+            return interpolation(val1, val2)
+
+        # max_indices = sorted(list(range(self.world[0].shape[0])),
+        #                      key=key_func, reverse=True)
+        # return max_indices
+
+        recommendations = [(ind, key_func(ind)) for ind in range(self.world[0].shape[0])]
+        sorted_rec = sorted(recommendations, key=lambda el: el[1], reverse=True)
+        return [el[0] for el in sorted_rec], [el[1] for el in sorted_rec]
+
 
 # class AdamSearcher:
 #     def __init__(self, vector: np.ndarray, world):

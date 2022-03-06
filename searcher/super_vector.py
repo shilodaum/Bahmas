@@ -5,6 +5,7 @@ import numpy as np
 and_words = ["וגם", "גם", "עם", "אך"]
 or_words = ["או"]
 not_words = ["לא", "ללא", "חסר", "בלי"]
+interpolation_words = ["interp"]
 
 connections_map = {}
 connections_map.update({word: min for word in and_words})
@@ -13,9 +14,13 @@ connections_map.update({word: max for word in or_words})
 print('2: ', connections_map)
 connections_map.update({word: min for word in not_words})
 print('3: ', connections_map)
+def interpolation(x, y, const=0.4):
+    return const * x + (1 - const) * y
+connections_map.update({word: interpolation for word in interpolation_words})
 
 if __name__ == '__main__':
     pass
+
 
 class SuperVector:
     def __init__(self, left, right, connection):
@@ -58,7 +63,7 @@ class SuperVector:
     def reverse(self):
         if self.connection is None:
             # Assuming called when became words counter
-            self.left = self.left == 0
+            self.left = (self.left == 0).astype(np.int64)
         else:
             self.left.reverse()
             self.right.reverse()
