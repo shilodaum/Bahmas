@@ -94,12 +94,10 @@ class NotSuperVector(SuperVector):
         if self.connection is None:
             return sim_func(self.left == 0)
 
-        left_copy = deepcopy(self.left)
-        left_copy.flip()
         right_copy = deepcopy(self.right)
         right_copy.flip()
 
-        left_val = left_copy.apply_sim_func(sim_func)
+        left_val = self.left.apply_sim_func(sim_func)
         right_val = right_copy.apply_sim_func(sim_func)
 
         if np.isnan(left_val):
