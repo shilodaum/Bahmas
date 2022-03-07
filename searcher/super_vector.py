@@ -12,7 +12,7 @@ connections_map.update({word: min for word in and_words})
 # print('1: ', connections_map)
 connections_map.update({word: max for word in or_words})
 # print('2: ', connections_map)
-connections_map.update({word: min for word in not_words})
+connections_map.update({word: sum for word in not_words})
 
 
 # print('3: ', connections_map)
@@ -72,6 +72,13 @@ class SuperVector:
             self.left.reverse()
             self.right.reverse()
 
+    def flip(self):
+        if self.connection is None:
+            self.left = -self.left
+        else:
+            self.left.flip()
+            self.right.flip()
+
     def __str__(self):
         if self.right is None:
             return ' '.join(self.left)
@@ -88,9 +95,9 @@ class NotSuperVector(SuperVector):
             return sim_func(self.left == 0)
 
         left_copy = deepcopy(self.left)
-        left_copy.reverse()
+        left_copy.flip()
         right_copy = deepcopy(self.right)
-        right_copy.reverse()
+        right_copy.flip()
 
         left_val = left_copy.apply_sim_func(sim_func)
         right_val = right_copy.apply_sim_func(sim_func)
