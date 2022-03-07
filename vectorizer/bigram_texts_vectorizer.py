@@ -6,12 +6,14 @@ import numpy as np
 import vectorizer.utils
 from vectorizer.utils import in_sorted_list, BI_PREFIXES
 import bisect
-
 from sklearn.feature_extraction.text import CountVectorizer
 
 directory= 'vectorizer'
 
 def count_vectorization_bigram(df):
+    """
+     create count vector of the bigram
+    """
     vec = CountVectorizer(stop_words=vectorizer.utils.get_stop_words(), ngram_range=(2, 2))
 
     # fit the countVectorizer on the train's features
@@ -26,9 +28,6 @@ def count_vectorization_bigram(df):
 def stemming(df):
     """
     filter out prefixes from words
-    :param words_list: list of words from text as [(word,count)...]
-    :param prefixes: prefixes
-    :return: filtered words
     """
     print(f'there are {len(df.columns)} couples')
 
@@ -71,10 +70,14 @@ def stemming(df):
 
 
 def delete_rare_features_bigram(df):
+    """delete rare features from bigram data frame"""
     return vectorizer.utils.delete_rare_features(df, 5)
 
 
 def download_df_csv(filepath):
+    """
+    download the data frame into the given filepath
+    """
     print('----------start to get the texts----------')
     texts_list = vectorizer.utils.get_list_of_texts()
     print('----------start to create count vector-------------')
@@ -84,35 +87,45 @@ def download_df_csv(filepath):
     print('----------start to delete rare feature-------------')
     df = delete_rare_features_bigram(df)
     print('----------start to normalize rows-------------')
-    #TODO maybe uint
+
     df = df.astype(np.int8)
-    # df = vectorizer.utils.normalize_rows(df)
+
     print('-----------------------saving to file-----------------------')
-    df.to_csv(os.path.join(directory,filepath), index=False, compression='zip')
+    df.to_csv(os.path.join(directory, filepath), index=False, compression='zip')
 
 
 def save_features(filepath):
-    df = pd.read_csv(os.path.join(directory,filepath))
+    """
+    save the bigrams data frame features
+    """
+    df = pd.read_csv(os.path.join(directory, filepath))
     features = list(df.columns)
     with open('bigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
 
 
 def add_new_trips(json_path, df_path):
+    """
+    add new paths into our data
+    """
+    # get the whole data
     texts_list = vectorizer.utils.get_list_of_texts(json_path)
+
+    # get the bigram vectors of the new paths as a data frame
     new_trips_df = count_vectorization_bigram(texts_list)
+
+    # get the original data frame
     original_df = pd.read_csv(df_path)
+
+    # connect the data frames and download the result
     new_df = pd.concat([original_df, new_trips_df], ignore_index=True, sort=False)
     df = stemming(new_df)
-    # df = vectorizer.utils.normalize_rows(df)
     df.fillna(0)
     df.to_csv(df_path, index=False, compression='zip')
 
 
 def main():
     filepath = 'texts_vectors_bigrams.zip'
-    # vectorizer.utils.show_df_csv(filepath)
-    # print(vectorizer.utils.get_features('bigrams_features.json'))
     download_df_csv(filepath)
     save_features(filepath)
 
