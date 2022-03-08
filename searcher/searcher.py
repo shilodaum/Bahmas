@@ -29,7 +29,7 @@ class BaseSearcherInArray(Searcher):
 
     def search(self):
         def key_func(index):
-            partial_func = partial(self.sim_func, self.world[index])
+            partial_func = partial(self.sim_func, self.world.iloc[index])
             val = self.super_vector.apply_sim_func(partial_func)
             return val if not np.isnan(val) else float("-inf")
 
