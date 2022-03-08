@@ -8,21 +8,25 @@ or_words = ["או"]
 not_words = ["ולא", "לא", "ללא", "חסר", "ובלי", "בלי"]
 interpolation_words = ["interp"]
 
-# connection map helps us understand context words
-connections_map = {}
-connections_map.update({word: min for word in and_words})
-# print('1: ', connections_map)
-connections_map.update({word: max for word in or_words})
-# print('2: ', connections_map)
-connections_map.update({word: sum for word in not_words})
 
-
-# print('3: ', connections_map)
-def interpolation(x, y, const=0.4):
+def interpolation(x, y, const=0.3):
     """
     interpolate the value with a constant
     """
     return const * x + (1 - const) * y
+
+
+def and_words_logic(x, y):
+    return interpolation(min(x, y), sum(x, y), 0.6)
+
+
+# connection map helps us understand context words
+connections_map = {}
+connections_map.update({word: and_words_logic for word in and_words})
+# print('1: ', connections_map)
+connections_map.update({word: max for word in or_words})
+# print('2: ', connections_map)
+connections_map.update({word: sum for word in not_words})
 
 
 connections_map.update({word: interpolation for word in interpolation_words})
