@@ -17,6 +17,9 @@ connections_map.update({word: sum for word in not_words})
 
 # print('3: ', connections_map)
 def interpolation(x, y, const=0.4):
+    """
+    interpolate the value with a constant
+    """
     return const * x + (1 - const) * y
 
 
