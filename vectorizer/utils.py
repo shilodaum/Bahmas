@@ -9,6 +9,7 @@ import bisect
 import hebrew_tokenizer as ht
 import pandas as pd
 
+# Change the project directory
 if 'Bahmas' in os.getcwd():
     if not os.getcwd().endswith('Bahmas'):
         os.chdir('..')
