@@ -17,7 +17,7 @@ def interpolation(x, y, const=0.3):
 
 
 def and_words_logic(x, y):
-    return interpolation(min(x, y), sum(x, y), 0.6)
+    return interpolation(min(x, y), sum([x, y]), 0.6)
 
 
 # connection map helps us understand context words
