@@ -8,14 +8,14 @@ import pandas as pd
 
 if 'Bahmas' in os.getcwd():
     if not os.getcwd().endswith('Bahmas'):
-        os.chdir('..')
+        os.chdir('../..')
     directory = os.getcwd()
 else:
     directory = "/app"
 
 
 def collect_data():
-    with open("entries.json") as entries_file:
+    with open("../entries.json") as entries_file:
         data = entries_file.read()
     data = data.split(']')
     data = '],'.join(data)
@@ -23,7 +23,7 @@ def collect_data():
     data = data[:-2] + data[-1]
     data = json.loads(data)
 
-    with open("entries.csv", 'w', encoding="utf-8", newline='') as csvf:
+    with open("../entries.csv", 'w', encoding="utf-8", newline='') as csvf:
         indices = list(sorted([data[0][i] for i in range(1, len(data[0]), 2)]))
         fieldnames = ['query', *indices]
         csv_writer = csv.DictWriter(csvf, fieldnames=fieldnames)
@@ -38,7 +38,7 @@ def collect_data():
 
 def read_csv():
     data = []
-    with open("entries.csv", 'r', encoding='utf-8') as csvf:
+    with open("../entries.csv", 'r', encoding='utf-8') as csvf:
         reader = csv.reader(csvf)
         next(reader)
         for row in reader:
@@ -48,6 +48,7 @@ def read_csv():
     return data
 
 
+# calculate the average score for each track
 def calc_avg_score(data_list):
     scores = []
     for ind in range(len(data_list[0])):
@@ -55,13 +56,14 @@ def calc_avg_score(data_list):
     return scores
 
 
+# create the (bar) plot of # most recommended tracks by the users' queries
 def draw_histogram(scores_list):
     most_popular_indices = sorted(range(len(scores_list)), key=lambda i:scores_list[i], reverse=True)
     most_popular_indices.remove(328)
     most_popular_indices = most_popular_indices[:8]
     scores_dict = {i: scores_list[i] for i in most_popular_indices}
 
-    all_paths = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))
+    all_paths = pd.read_json(os.path.join(directory, '../createDB', 'paths_data.zip'))
 
     from textwrap import wrap
     keys = ['\n'.join(el[::-1] for el in wrap(all_paths.iloc[i]['path_name'], 20)) for i in scores_dict.keys()]
@@ -79,12 +81,6 @@ def draw_histogram(scores_list):
     ax.yaxis.set_tick_params(pad=10)
     # Show top values
     ax.invert_yaxis()
-
-    # ax.set_ylabel('שם מסלול'[::-1], fontsize=0)
-
-    # for label in (ax.get_xticklabels() + ax.get_yticklabels()):
-    #     label.set_fontsize(6)
-
     # Horizontal Bar Plot
     ax.barh(keys, scores_dict.values())
 
