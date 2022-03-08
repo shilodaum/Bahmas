@@ -58,7 +58,7 @@ def calc_avg_score(data_list):
 def draw_histogram(scores_list):
     most_popular_indices = sorted(range(len(scores_list)), key=lambda i:scores_list[i], reverse=True)
     most_popular_indices.remove(328)
-    most_popular_indices = most_popular_indices[:10]
+    most_popular_indices = most_popular_indices[:8]
     scores_dict = {i: scores_list[i] for i in most_popular_indices}
 
     all_paths = pd.read_json(os.path.join(directory, 'createDB', 'paths_data.zip'))
