@@ -10,6 +10,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 
 directory = 'vectorizer'
 
+
 def count_vectorization(df):
     """
     create count vectors of the texts in df
@@ -86,14 +87,14 @@ def download_df_csv(filepath):
     print(df.dtypes)
     print('-----------------------saving to file-----------------------')
 
-    df.to_csv(os.path.join(directory,filepath), index=False, compression='zip')
+    df.to_csv(os.path.join(directory, filepath), index=False, compression='zip')
 
 
 def save_features(filepath):
     """
     save the unigram data frame features
     """
-    df = pd.read_csv(os.path.join(directory,filepath))
+    df = pd.read_csv(os.path.join(directory, filepath))
     features = list(df.columns)
     with open('unigrams_features.json', 'w', encoding='utf-8') as f:
         json.dump(features, f)
