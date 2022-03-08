@@ -53,9 +53,13 @@ class BaseSearcherInArray(Searcher):
             return val if not np.isnan(val) else float("-inf")
 
         # find the best paths
-        max_indices = sorted(list(range(len(self.world))),
-                             key=key_func, reverse=True)
-        return max_indices[:5]
+        # max_indices = sorted(list(range(len(self.world))),
+        #                      key=key_func, reverse=True)
+        # return max_indices[:5]
+
+        recommendations = [(ind, key_func(ind)) for ind in range(self.world.shape[0])]
+        sorted_rec = sorted(recommendations, key=lambda el: el[1], reverse=True)
+        return [el[0] for el in sorted_rec], [el[1] for el in sorted_rec]
 
 
 class InterpolationSearcher(Searcher):
