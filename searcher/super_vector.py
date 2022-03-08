@@ -10,7 +10,7 @@ interpolation_words = ["interp"]
 
 # connection map helps us understand context words
 connections_map = {}
-connections_map.update({word: sum for word in and_words})
+connections_map.update({word: min for word in and_words})
 # print('1: ', connections_map)
 connections_map.update({word: max for word in or_words})
 # print('2: ', connections_map)
@@ -146,11 +146,7 @@ class NotSuperVector(SuperVector):
         if np.isnan(right_val):
             return left_val
 
-        # TODO should it be min or sum?
-        if self.connection_logic is None:
-            return min(left_val, right_val)
-        else:
-            return self.connection_logic(left_val, right_val)
+        return min(left_val, right_val)
 
     def __str__(self):
         val = super().__str__()
